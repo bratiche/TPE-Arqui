@@ -1,3 +1,7 @@
+# Binary files
+*.bin
+*.sys
+
 # Object files
 *.o
 *.ko
