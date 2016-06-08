@@ -2,6 +2,12 @@
 *.bin
 *.sys
 
+#Image files
+*.img
+*.qcow2
+*.vmdk
+
+
 # Object files
 *.o
 *.ko

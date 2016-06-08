@@ -11,6 +11,15 @@ void * memset(void * destination, int32_t c, uint64_t length)
 	return destination;
 }
 
+void * memsetw(void * dest, unsigned short val, int count) {
+	int i;
+	short * d = dest;
+	for (i = 0; i < count; i++) {
+		d[i] = val;
+	}
+	return dest;
+}
+
 void * memcpy(void * destination, const void * source, uint64_t length)
 {
 	/*
