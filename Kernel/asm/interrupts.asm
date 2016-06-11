@@ -53,7 +53,7 @@ EXTERN irqDispatcher
 %macro irqHandlerMaster 1
 	pushState
 
-	mov rax, %1
+	mov rdi, %1
 	call irqDispatcher
 	
 	;signal pic EOI
@@ -82,7 +82,7 @@ picMasterMask:
     mov ax, di
     out	21h,al
 
-    mov rsp, ebp
+    mov rsp, rbp
     pop rbp
     retn
 

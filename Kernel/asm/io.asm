@@ -1,12 +1,14 @@
-global read_port
-global write_port
+GLOBAL read_port
+GLOBAL write_port
+
+section .text
 
 ;read_port(port)
 read_port:
 	push rbp
 	mov rbp, rsp
 	
-	mov rdx, [rbp + 8]
+	mov rdx, rdi
 	in al, dx	
 
 	mov rsp, rbp
@@ -18,8 +20,8 @@ write_port:
 	push rbp
 	mov rbp, rsp
 
-	mov rdx, [rbp + 8]    
-	mov al, [rbp + 12]  
+	mov rdx, rdi    
+	mov rax, rsi
 	out dx, al  
 
 	mov rsp, rbp

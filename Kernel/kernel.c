@@ -4,6 +4,7 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <video.h>
+#include <keyboard.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -93,12 +94,13 @@ int main()
 	//ncNewline();
 	//ncNewline();
 
+	set_idt();
+
 	clear();
 
 	puts("Bienvenido al kernelino\n", MAGENTA);
 
-	puts("Como andai", CYAN);
-
+	puts("Como andai\n", CYAN);
 
 	((EntryPoint)codeModuleAddress)();
 
@@ -107,6 +109,8 @@ int main()
 	//ncNewline();
 	//ncPrint("  Sample data module contents: ");
 	//ncPrint((char*)dataModuleAddress);
+
+	while (1);
 
 	return 0;
 }
