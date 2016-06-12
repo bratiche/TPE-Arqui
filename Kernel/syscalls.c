@@ -30,9 +30,11 @@ void sys_read(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
 	char * buffer = (char *)rcx;
 	int len = rdx;
 
-	while (len--) {
-		
+	int i = 0;
+	for (i = 0; i < len; i++) {
+		buffer[i] = 'A';
 	}
+
 }
 
 void sys_exit(uint64_t rbx, uint64_t rdx, uint64_t rcx) {

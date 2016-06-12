@@ -1,7 +1,7 @@
 #ifndef _INTERRUPS_H_
 #define _INTERRUPS_H_
 
-#include "types.h"
+#include <types.h>
 
 typedef void (*ISR)(void);		// (ISR = Interrupt Service Routine) puntero a funcion de manejo de interrupciones de hardware
 

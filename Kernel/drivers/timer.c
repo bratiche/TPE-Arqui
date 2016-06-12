@@ -1,5 +1,6 @@
 #include <timer.h>
 #include <video.h>
+#include <rtc.h>
 
 #define TICKS_PER_SECOND 18
 
@@ -10,7 +11,7 @@ void timer_handler(void) {
 
 	ticks++;
 	if (ticks % TICKS_PER_SECOND == 0) {
-		putchar_at('T', GREEN, 10, 10);
+		puts_at(time(), GREEN, 0, 72);
 	}
 
 }

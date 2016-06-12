@@ -101,7 +101,7 @@ picSlaveMask:
     pop     rbp
     retn
 
-; Carga el IDTR
+; Carga el IDTR (unused)
 ;_lidt(idtr)
 _lidt:				
     push    rbp

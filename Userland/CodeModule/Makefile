@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
 MODULE=0000-codeModule.bin
-SOURCES_C=$(wildcard *.c)
+SOURCES_C=$(wildcard *.c) $(wildcard lib/*.c)
 OBJECTS_C=$(SOURCES_C:.c=.o)
 
 SOURCES_ASM=$(wildcard asm/*.asm)

@@ -102,9 +102,6 @@ int main()
 
 	puts("Bienvenido al kernelino\n", MAGENTA);
 
-	puts("Como andai\n", CYAN);
-
-
 	((EntryPoint)codeModuleAddress)();
 
 	// ncPrint("  Sample data module at 0x");

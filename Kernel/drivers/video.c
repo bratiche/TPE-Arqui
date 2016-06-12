@@ -1,5 +1,6 @@
 #include <lib.h>
 #include <video.h>
+#include <io.h>
 
 #define ROWS 25
 #define COLS 80
@@ -7,15 +8,12 @@
 
 #define out_of_bounds(r, c) (r < 0 || r >= ROWS || c < 0 || c >= COLS)
 
-extern void write_port(unsigned short port, unsigned char data);
-
 static void scroll(void);
 static void delete(void);
 static void update_cursor(void);
 
 char * video = (char *) 0xB8000;
 unsigned int current_loc = 0;
-//char attr = DEFAULT;
 
 void fill(char ch, char attr) {
 	unsigned int i = 0;

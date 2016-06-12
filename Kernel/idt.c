@@ -16,7 +16,7 @@ void _irq80Handler(void);
 
 void set_idt () {
 
-    idt=0;
+    idt = 0;
 
     set_idt_entry(0x20, 0x08, (uint64_t)&_irq00Handler , 0x8E);
     set_idt_entry(0x21, 0x08, (uint64_t)&_irq01Handler , 0x8E);    

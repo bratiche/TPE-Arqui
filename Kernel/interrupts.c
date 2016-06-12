@@ -28,6 +28,7 @@ void syscallDispatcher(uint64_t rax, uint64_t rbx, uint64_t rdx, uint64_t rcx) {
 	syscalls[rax](rbx, rdx, rcx);
 }
 
+/* Initializes all hardware and software interrupts */
 void init_interrupts() {
 	routines[PIT_IRQ] = timer_handler;
 	routines[KB_IRQ] = keyboard_handler;

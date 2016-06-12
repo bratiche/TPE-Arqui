@@ -5,6 +5,7 @@
 
 typedef void (*SYSCALL)(uint64_t rbx, uint64_t rcx, uint64_t rdx);	// puntero a funcion de manejo de una syscall
 
+#define STDIN 0
 #define STDOUT 1
 #define STDERR 2
 
