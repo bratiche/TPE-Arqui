@@ -3,9 +3,9 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
-#include <idt.h> 
 #include <video.h>
 #include <interrupts.h>
+#include <syscalls.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -95,10 +95,9 @@ int main()
 	//ncNewline();
 	//ncNewline();
 
-	init_interrupts();	// set hardware interrupt and sycall handler fundtions
-	set_idt();
-
 	clear();
+	init_syscalls();	// set software interrupt handler functions
+	init_interrupts();	// set hardware interrupt handler functions 
 
 	puts("Bienvenido al kernelino\n", MAGENTA);
 
@@ -109,8 +108,6 @@ int main()
 	// ncNewline();
 	// ncPrint("  Sample data module contents: ");
 	// ncPrint((char*)dataModuleAddress);
-
-	while (1);
 
 	return 0;
 }

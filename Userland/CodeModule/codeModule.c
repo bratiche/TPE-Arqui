@@ -15,6 +15,8 @@ int main() {
 
 	//exit(0); //funciona
 
+	while (1);
+
 	return 0;
 }
 
