@@ -11,8 +11,10 @@ GLOBAL _irq02Handler
 GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
+GLOBAL _irq80Handler
 
 EXTERN irqDispatcher
+EXTERN syscallDispatcher
 
 %macro pushState 0 
 	push rax
@@ -137,6 +139,19 @@ _irq04Handler:
 ;USB
 _irq05Handler:
 	irqHandlerMaster 5
+
+_irq80Handler:
+	push rbp
+	mov rbp, rsp
+
+	mov rdi, rax
+	mov rsi, rbx
+
+	call syscallDispatcher
+
+	mov rsp, rbp
+	pop rbp
+	iretq
 
 haltcpu:
 	cli

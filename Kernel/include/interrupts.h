@@ -3,12 +3,12 @@
 
 #include "types.h"
 
-void _irq00Handler(void);
-void _irq01Handler(void);
-void _irq02Handler(void);
-void _irq03Handler(void);
-void _irq04Handler(void);
-void _irq05Handler(void);
+typedef void (*ISR)(void);		// (ISR = Interrupt Service Routine) puntero a funcion de manejo de interrupciones de hardware
+
+#define ISR_SIZE 8
+
+#define PIT_IRQ 0
+#define KB_IRQ 1
 
 void _cli(void);
 
@@ -22,5 +22,7 @@ void _lidt(IDTR * idtr);
 
 //Termina la ejecución de la cpu.
 void haltcpu(void);
+
+void init_interrupts(void);
 
 #endif /* INTERRUPS_H_ */

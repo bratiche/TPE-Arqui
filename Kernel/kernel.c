@@ -3,8 +3,9 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include <idt.h> 
 #include <video.h>
-#include <keyboard.h>
+#include <interrupts.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -94,6 +95,7 @@ int main()
 	//ncNewline();
 	//ncNewline();
 
+	init_interrupts();	// set hardware interrupt and sycall handler fundtions
 	set_idt();
 
 	clear();
@@ -102,13 +104,14 @@ int main()
 
 	puts("Como andai\n", CYAN);
 
+
 	((EntryPoint)codeModuleAddress)();
 
-	//ncPrint("  Sample data module at 0x");
-	//ncPrintHex((uint64_t)dataModuleAddress);
-	//ncNewline();
-	//ncPrint("  Sample data module contents: ");
-	//ncPrint((char*)dataModuleAddress);
+	// ncPrint("  Sample data module at 0x");
+	// ncPrintHex((uint64_t)dataModuleAddress);
+	// ncNewline();
+	// ncPrint("  Sample data module contents: ");
+	// ncPrint((char*)dataModuleAddress);
 
 	while (1);
 

@@ -2,7 +2,7 @@
 #define IDT_H_
 
 
-void set_idt ();
+void set_idt();
 
 
 #endif /* IDT_H */
