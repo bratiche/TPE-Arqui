@@ -10,6 +10,7 @@
 #define EMPTY 0xFF		//255
 
 static void key_pressed(char keycode);
+static void print_buffer(void);
 
 static unsigned char buffer[BUFFER_SIZE] = { EMPTY };
 static int write_pos = 0;
@@ -24,6 +25,14 @@ void keyboard_handler(void) {
 	if (status & 0x01) {
 		keycode = read_port(KEYBOARD_DATA_PORT);
 		key_pressed(keycode);
+		//print_buffer();
+	}
+}
+
+void print_buffer() {
+	int i;
+	for (i = 0; i < BUFFER_SIZE; i++) {
+		putchar(buffer[i], RED);
 	}
 }
 

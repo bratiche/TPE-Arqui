@@ -4,11 +4,12 @@
 #include <stdarg.h>
 
 #define EOF -1
+#define UCHAR_MAX 0xFF
 
-char getchar(void);
-char fgetc(int fd);
-void putchar(int c);
-void fputc(int fd, int c);
+int getchar(void);
+int fgetc(int fd);
+void putchar(char c);
+void fputc(int fd, char c);
 
 //gets
 //fgets

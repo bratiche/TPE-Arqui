@@ -29,9 +29,18 @@ int main() {
 
 
 void printf_test() {
-	printf("%s\n", "string");
-	printf("hexa: %x\n", 10);
-	printf("decimal: %d\n", 10);
-	printf("octal: %o\n", 10);
-	printf("binario: %b\n", 10);
+	int i;
+	printf("printf test:\n");
+	i = printf("%s\n", "string");
+	printf("characters written: %d\n", i);
+	i = printf("%x\n", 10);
+	printf("characters written: %d\n", i);
+	i = printf("%d\n", -10);
+	printf("characters written: %d\n", i);
+	i = printf("%o\n", 10);
+	printf("characters written: %d\n", i);
+	i = printf("%b\n", 10);
+	printf("characters written: %d\n", i);
+	i = printf("%c %c\n", 'A', 'A' + UCHAR_MAX + 1);
+	printf("characters written: %d\n", i);
 }

@@ -7,21 +7,21 @@ static int print_hex(int fd, int hex);
 static int print_dec(int fd, int dec);
 static int print_oct(int fd, int oct);
 static int print_bin(int fd, int bin);
-static int num_to_base(int value, char * buffer, int base);
+static int num_to_base(unsigned int value, char * buffer, unsigned int base);
 
-void putchar(int c) {
+void putchar(char c) {
 	fputc(STDOUT, c);
 }
 
-void fputc(int fd, int c) {
+void fputc(int fd, char c) {
 	write(fd, &c, 1);
 }
 
-char getchar() {
+int getchar() {
 	return fgetc(STDIN);
 }
 
-char fgetc(int fd) {
+int fgetc(int fd) {
 	char c;
 	read(fd, &c, 1);
 	return c;
@@ -82,7 +82,6 @@ int vfprintf(int fd, const char * fmt, va_list ap) {
 		}
 	}
 
-	va_end(ap);
 	return written;
 }
 
@@ -106,7 +105,7 @@ static int print_arg(int fd, va_list ap, char option) {
 			written = print_bin(fd, va_arg(ap, int));
 			break;
 		case 'c':
-			fputc(fd, va_arg(ap, int));
+			fputc(fd, va_arg(ap, int) & UCHAR_MAX);
 			written++;
 			break;
 		default:
@@ -117,17 +116,26 @@ static int print_arg(int fd, va_list ap, char option) {
 }
 
 static int print_hex(int fd, int num) {
-	int digits;
+	int digits, written;
 	char buffer[20];
 	digits =  num_to_base(num, buffer, 16);
-	return fputsn(fd, buffer, digits);
+	written = fputsn(fd, buffer, digits);
+	// fputc(fd, 'h');
+	// written++;
+	return written;
 }
 
 static int print_dec(int fd, int num) {
 	int digits;
+	int negative = 0;
 	char buffer[20];
-	digits =  num_to_base(num, buffer, 10);
-	return fputsn(fd, buffer, digits);
+	if (num < 0) {
+		fputc(fd, '-');
+		negative = 1;
+		num *= -1;
+	}
+	digits = num_to_base(num, buffer, 10);
+	return fputsn(fd, buffer, digits) + negative;
 }
 
 static int print_oct(int fd, int num) {
@@ -144,7 +152,7 @@ static int print_bin(int fd, int num) {
 	return fputsn(fd, buffer, digits);
 }
 
-static int num_to_base(int value, char * buffer, int base) {
+static int num_to_base(unsigned int value, char * buffer, unsigned int base) {
 	char *p = buffer;
 	char *p1, *p2;
 	int digits = 0;
