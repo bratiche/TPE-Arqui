@@ -6,7 +6,7 @@
 #define BUFFER_SIZE 80
 
 static void clean_buffer(void);
-static void print_prompt(void);
+static void prompt(void);
 
 char buffer[BUFFER_SIZE] = { 0 };
 int current_pos = 0;
@@ -18,9 +18,8 @@ void init_shell() {
 	//get_user_name();
 	clean_buffer();
 
-	//reemplazar por printf
 	putchar('\n');
-	print_prompt();
+	prompt();
 }
 
 void update_shell() {
@@ -31,12 +30,12 @@ void update_shell() {
 	switch (key) {
 		case '\n':
 			putchar('\n');
-			puts(buffer);
+			printf(buffer);
 			if (current_pos != 0) {
 				putchar('\n');
 			}
 			//excute_command();
-			print_prompt();
+			prompt();
 			clean_buffer();
 			break;
 		case '\b':
@@ -45,6 +44,10 @@ void update_shell() {
 				buffer[--current_pos] = 0;
 			}	
 			break;
+		case ' ':		// no imprimo ni agrego al buffer los espacios iniciales
+			if (current_pos == 0) {
+				return;
+			}
 		default:
 			putchar(key);
 			if (current_pos == BUFFER_SIZE) {
@@ -63,9 +66,6 @@ void clean_buffer() {
 	current_pos = 0;
 }
 
-void print_prompt() {
-	puts(user_name);
-	puts("@");
-	puts(os_name);
-	puts("> ");
+void prompt() {
+	printf("%s@%s> ", user_name, os_name);
 }
