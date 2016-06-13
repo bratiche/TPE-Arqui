@@ -2,6 +2,7 @@
 #include <syscalls.h>
 #include <string.h>
 #include <stdio.h>
+#include <shell.h>
 
 int main() {
 
@@ -11,12 +12,13 @@ int main() {
 
 	write(STDERR, msg, strlen(msg));
 
-	putchar(getchar());
-
 	//exit(0); //funciona
 
-	while (1);
+	init_shell();
+
+	while (1) {
+		update_shell();
+	}
 
 	return 0;
 }
-

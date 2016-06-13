@@ -4,6 +4,10 @@
 
 extern void haltcpu(void); // Termina la ejecucion de la cpu.
 
+static int sys_write(uint64_t fd, uint64_t buffer, uint64_t len);
+static int sys_read(uint64_t fd, uint64_t buffer, uint64_t len);
+static int sys_exit(uint64_t fd, uint64_t buffer, uint64_t len);
+
 static SYSCALL syscalls[SYSCALLS_SIZE];		// array de punteros a funcion para las syscalls
 
 /*	
@@ -28,7 +32,8 @@ void init_syscalls() {
 	syscalls[SYS_WRITE] = sys_write;
 }
 
-void sys_write(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
+/* Retorna la cantidad de caracteres escritos */
+int sys_write(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
 	int fd = rbx;
 	char * buffer = (char *)rcx;
 	int len = rdx;
@@ -42,39 +47,45 @@ void sys_write(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
 			attr = RED;
 			break;
 		default:
-			return;
+			return 0;
 	}
 
-	while(len--) {
-		putchar(*((char *)buffer), attr);
+	while(len--  && *buffer != 0) {
+		putchar(*buffer, attr);
 		buffer++;
 	}
+
+	return rdx - len - 1;
 }
 
-static void read_stdin(char * buffer, int len) {
-	int i, c;
-	for (i = 0; i < len && (c = get_key()) != -1; i++) {
-		buffer[i] = (char)c;
+static int read_stdin(char * buffer, int len) {
+	int i = 0;
+	char c;
+
+	while (i < len && !is_empty()) {
+		c = get_key();
+		buffer[i++] = c;
 	}
+
+	return i;
 }
 
-void sys_read(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
+/* Retorna la cantidad de caracteres leidos */
+int sys_read(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
 	int fd = rbx;
 	char * buffer = (char *)rcx;
 	int len = rdx;
-
 	switch (fd) {
 		case STDIN:
-			read_stdin(buffer, len);
-			return;
+			return read_stdin(buffer, len);
 		default:  
-			return;
+			return 0;
 	}
-
 }
 
-void sys_exit(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
+int sys_exit(uint64_t rbx, uint64_t rdx, uint64_t rcx) {
 	puts("Exit code: ", LIGHT_GREY);
 	putnumber(rbx, LIGHT_GREY);
 	haltcpu();
+	return rbx;
 }

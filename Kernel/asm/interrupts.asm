@@ -101,21 +101,6 @@ picSlaveMask:
     pop     rbp
     retn
 
-; Carga el IDTR (unused)
-;_lidt(idtr)
-_lidt:				
-    push    rbp
-    mov     rbp, rsp
-
-    push    rbx	
-    mov     rbx, rdi	; puntero a IDTR
-	lidt    [rbx]		; carga IDTR
-    pop     rbx
-
-    mov 	rsp, rbp
-    pop     rbp
-    retn
-
 ;8254 Timer (Timer Tick)
 _irq00Handler:
 	irqHandlerMaster 0

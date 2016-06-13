@@ -9,7 +9,7 @@ read:
 	mov rax, 3		; syscall id
 	mov rbx, rdi	; fd
 	mov rcx, rsi	; buffer
-					; rdx =  size
+					; rdx = size
 	int 80h		
 
 	leave
@@ -38,5 +38,4 @@ exit:
 
 	leave
 	ret
-
 

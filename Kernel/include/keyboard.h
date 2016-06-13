@@ -2,9 +2,7 @@
 #define KEYBOARD_H
 
 void keyboard_handler(void);
-
-int get_key();
-
-int is_empty();
+unsigned char get_key(void);
+int is_empty(void);
 
 #endif

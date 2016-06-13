@@ -5,8 +5,10 @@
 #define STDOUT	1
 #define STDERR	2
 
-void write(unsigned int fd, const void * buffer, unsigned int size);
-void read(unsigned int fd, const void * buffer, unsigned int size);
-void exit(int code);
+/* Retorna la cantidad de caracteres escritos */
+int write(unsigned int fd, const void * buffer, unsigned int size);
+/* Retorna la cantidad de caracteres leidos */
+int read(unsigned int fd, const void * buffer, unsigned int size);
+int exit(int code);
 
 #endif

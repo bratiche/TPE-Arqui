@@ -6,10 +6,14 @@
 #define KEYBOARD_DATA_PORT		0x60
 #define KEYBOARD_STATUS_PORT	0x64
 
-#define BUFFER_SIZE 80		// una linea de pantalla 
+#define BUFFER_SIZE 1			// por que no anda si pongo un buffer mas grande??
+#define EMPTY 0xFF		//255
 
-char buffer[BUFFER_SIZE] = { -1 };
-int current_pos = 0;		// si current_pos es cero, el buffer esta vacio (buffer[0] = -1 siempre)
+static void key_pressed(char keycode);
+
+static unsigned char buffer[BUFFER_SIZE] = { EMPTY };
+static int write_pos = 0;
+static int read_pos = 0;
 
 void keyboard_handler(void) {
 	unsigned char status;
@@ -19,31 +23,38 @@ void keyboard_handler(void) {
 	/* Lowest bit of status will be set if buffer is not empty */
 	if (status & 0x01) {
 		keycode = read_port(KEYBOARD_DATA_PORT);
-		if (keycode < 0) {
-			return;
-		}
-		
-		if (current_pos == BUFFER_SIZE - 1) {
-			current_pos = 0;			
-		}
-		buffer[++current_pos] = keyboard_map[keycode];		
+		key_pressed(keycode);
+	}
+}
 
-		//putchar(keyboard_map[keycode], LIGHT_GREY);
+/* Strores the keys pressed in the buffer */
+void key_pressed(char keycode) {
+
+	if (keycode < 0) {
+		return;
+	}
+ 
+	//TODO shift, caps lock, etc
+
+	buffer[write_pos++] = keyboard_map[keycode];
+
+	if (write_pos == BUFFER_SIZE) {
+		write_pos = 0;
 	}
 }
 
 /* Returns the ASCCI code of the last key pressed or -1 if the buffer is empty */
-int get_key(void) {
-	if (is_empty()) {
-		return -1;
+unsigned char get_key(void) {
+	unsigned char key = buffer[read_pos];
+	buffer[read_pos++] = EMPTY;
+
+	if (read_pos == BUFFER_SIZE) {
+		read_pos = 0;
 	}
 
-	int c = buffer[--current_pos];
-
-	return c;
+	return key;
 }
 
-/* Returns 0 if the buffer is empty */
-int is_empty() {
-	return current_pos == 0;
+int is_empty(void) {
+	return (buffer[read_pos] == EMPTY);
 }
