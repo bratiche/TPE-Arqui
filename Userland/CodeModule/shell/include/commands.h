@@ -1,6 +1,8 @@
 #ifndef COMMAND_H_
 #define COMMAND_H_
 
+#define MAX_ARGS 10
+
 typedef enum {
 	ECHO,
 	HELP,

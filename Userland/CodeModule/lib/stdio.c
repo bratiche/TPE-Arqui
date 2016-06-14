@@ -74,10 +74,10 @@ int vfprintf(int fd, const char * fmt, va_list ap) {
 	while ((c = *fmt++) != 0) {
 		if (c == '%') {
 			char option = *(fmt++);
-			written += print_arg(STDOUT, ap, option);
+			written += print_arg(fd, ap, option);
 		}
 		else {
-			fputc(STDOUT, c);
+			fputc(fd, c);
 			written++;
 		}
 	}

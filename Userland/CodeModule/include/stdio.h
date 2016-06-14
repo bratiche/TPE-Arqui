@@ -5,6 +5,11 @@
 
 #define EOF -1
 #define UCHAR_MAX 0xFF
+#define NULL 0
+
+#define STDIN	0
+#define STDOUT	1
+#define STDERR	2
 
 int getchar(void);
 int fgetc(int fd);

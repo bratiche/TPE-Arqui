@@ -16,17 +16,17 @@ int main() {
 
 	//exit(0); //funciona
 
-	printf_test();
+	//printf_test();
 
 	init_shell();
 
 	while (1) {
 		update_shell();
+		//__asm__("hlt");
 	}
 
 	return 0;
 }
-
 
 void printf_test() {
 	int i;

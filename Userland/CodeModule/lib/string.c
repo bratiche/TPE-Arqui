@@ -1,4 +1,6 @@
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int strlen(const char * str) {
 	int i = 0;
@@ -24,6 +26,28 @@ int strcmp(const char * s1, const char * s2) {
 	return strcmp(++s1, ++s2);
 }
 
+// TODO hacerlo iterativo
+int strncmp(const char * s1, const char * s2, int n) {
+	if (n == 0) {
+		return 0;
+	}	
+
+	if(*s1 == 0) {
+		return *s2 != 0 ? -1 : 0;
+	}
+	if(*s2 == 0) {
+		return 1;
+	}
+
+	int cmp = (*s1 > *s2)? 1 : ((*s1 < *s2)? -1 : 0);
+
+	if(cmp != 0) {
+		return cmp;
+	}
+
+	return strncmp(++s1, ++s2, --n);
+} 
+
 int strcpy(const char * from, char * to) {
 	while(*from) {
 		*to = *from;
@@ -32,4 +56,44 @@ int strcpy(const char * from, char * to) {
 	}
 	*to = 0;
 	return 0;
+}
+
+int strncpy(const char * from, char * to, int n) {
+	while(*from && n--) {
+		*to = *from;
+		to++;
+		from++;
+	}
+	*to = 0;
+	return 0;
+}
+
+char * strchr(const char * str, char c) {
+	char * ret = (char *)str;
+
+	while (*ret != NULL && *ret != c) ret++;
+
+	return ret;
+}
+
+char * strstr(const char * str1, const char * str2) {
+	char * aux = (char *)str1;
+	char * ret = (char *)str2;
+	char * start = ret;
+	char c1, c2;
+
+	str1++;
+
+	while ((c1 = *aux++) != NULL && (c2 = *ret++) != NULL) {
+		if (c1 != c2) {
+			ret = ++start;
+			aux = (char *)str1; // start over again
+		}
+	}
+
+	if (c2 == NULL) {
+		return NULL;
+	}
+
+	return start;
 }
