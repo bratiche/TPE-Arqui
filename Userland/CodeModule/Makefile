@@ -14,12 +14,12 @@ $(MODULE): $(OBJECTS_C) $(OBJECTS_ASM)
 	$(LD) -T codeModule.ld $(OBJECTS_C) $(OBJECTS_ASM) -o ../$(MODULE)
 
 %.o: %.c
-	$(GCC) $(GCCFLAGS) -I./include -I./shell/include -c $< -o $@
+	$(GCC) $(GCCFLAGS) -I./include -I./shell/include -I./lib/include -I./asm/include -c $< -o $@
 
 %.o : %.asm
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o
+	rm -rf shell/*.o lib/*.o asm/*.o *.o
 
 .PHONY: all clean print
