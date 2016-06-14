@@ -83,6 +83,8 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+void BgaSetVideoMode(unsigned int Width, unsigned int Height, unsigned int BitDepth, int UseLinearFrameBuffer, int ClearVideoMemory);    
+
 int main()
 {	
 	//ncPrint("[Kernel Main]");
@@ -100,6 +102,8 @@ int main()
 	init_interrupts();	// set hardware interrupt handler functions 
 
 	puts("Bienvenido al kernelino\n", MAGENTA);
+
+	//BgaSetVideoMode(1024,768,0x18,1,1);
 
 	((EntryPoint)codeModuleAddress)();
 
