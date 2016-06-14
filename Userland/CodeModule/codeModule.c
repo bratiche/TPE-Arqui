@@ -22,7 +22,6 @@ int main() {
 
 	while (1) {
 		update_shell();
-		//__asm__("hlt");
 	}
 
 	return 0;

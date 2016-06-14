@@ -1,5 +1,6 @@
 GLOBAL _cli
 GLOBAL _sti
+GLOBAL _hlt
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 GLOBAL _lidt
@@ -74,6 +75,11 @@ _cli:
 
 _sti:
 	sti
+	ret
+
+_hlt:
+	sti
+	hlt
 	ret
 
 ;picMasterMask(mask)
