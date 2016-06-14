@@ -133,11 +133,15 @@ rtc_poll:
 	jne VBEfail
 	cmp byte [VBEModeInfoBlock.BitsPerPixel], 24	; Make sure this matches the number of bits for the mode!
 	jne VBEfail			; If set bit mode was unsuccessful then bail out
-	or bx, 0x4000			; Use linear/flat frame buffer model (set bit 14)
-	mov ax, 0x4F02			; SET SuperVGA VIDEO MODE - http://www.ctyme.com/intr/rb-0275.htm
-	int 0x10
-	cmp ax, 0x004F			; Return value in AX should equal 0x004F if supported and successful
-	jne VBEfail
+
+; This part is commented so it does not start in video mode
+
+;	or bx, 0x4000			; Use linear/flat frame buffer model (set bit 14)
+;	mov ax, 0x4F02			; SET SuperVGA VIDEO MODE - http://www.ctyme.com/intr/rb-0275.htm
+;	int 0x10
+;	cmp ax, 0x004F			; Return value in AX should equal 0x004F if supported and successful
+;	jne VBEfail
+
 	jmp VBEdone
 
 VBEfail:

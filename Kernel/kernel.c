@@ -96,7 +96,6 @@ void drawPixel(int x, int y, int r, int g, int b);
 
 void drawRect(int r, int g, int b, int w, int h, int x, int y);
 
-
 int main()
 {	
 	//ncPrint("[Kernel Main]");
@@ -115,7 +114,7 @@ int main()
 
 	puts("Bienvenido al kernelino\n", MAGENTA);
 
-	BgaGetCapabilities();
+//	BgaGetCapabilities();
 
 	BgaSetVideoMode(WIDTH,HEIGHT,BPP,1,0);
 
@@ -144,7 +143,8 @@ int main()
 
 unsigned char * bankAddress = (unsigned char *)0xA0000; 
 
-//TODO hacer extern y global en el sysvar.asm
+// Hardcodeada del bootloader de Pure64, para obtener esta direccion seteamos el modo vesa en 1
+// y modificamos el codigo para que no inicialice en modo video (solo setea )
 unsigned char ** addressAddress = (unsigned char **)(0x0000000000005C00 + 40);
 
 // con linear frame buffer
