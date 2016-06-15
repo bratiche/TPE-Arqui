@@ -52,13 +52,21 @@
 #define VBE_DISPI_TOTAL_VIDEO_MEMORY_KB  (VBE_DISPI_TOTAL_VIDEO_MEMORY_MB * 1024)
 #define VBE_DISPI_TOTAL_VIDEO_MEMORY_BYTES (VBE_DISPI_TOTAL_VIDEO_MEMORY_KB * 1024)
 
+#define DEFAULT_WIDTH 1024
+#define DEFAULT_HEIGHT 768
+#define DEFAULT_BPP 24
+
+/* Functions to set up the VESA video mode */ 
 void BgaWriteRegister(unsigned short IndexValue, unsigned short DataValue);
-
 void BgaSetVideoMode(unsigned int Width, unsigned int Height, unsigned int BitDepth, int UseLinearFrameBuffer, int ClearVideoMemory);
-
 void BgaSetBank(unsigned short BankNumber);
-
 void BgaGetCapabilities(void);
+
+
+/* Functions to manipulate the screen's pixels */
+void BgaDrawPixel(int x, int y, int r, int g, int b);
+void BgaDrawRect(int r, int g, int b, int w, int h, int x, int y);
+void BgaFillScreen(int r, int g, int b);
 
 
 #endif

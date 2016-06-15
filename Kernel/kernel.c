@@ -7,8 +7,6 @@
 #include <interrupts.h>
 #include <syscalls.h>
 
-#include <bga.h>
-
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -85,17 +83,6 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-
-void update_video(void);
-void update_buffer(void);
-#define WIDTH 800
-#define HEIGHT 600
-#define BPP 24
-
-void drawPixel(int x, int y, int r, int g, int b);
-
-void drawRect(int r, int g, int b, int w, int h, int x, int y);
-
 int main()
 {	
 	//ncPrint("[Kernel Main]");
@@ -114,21 +101,6 @@ int main()
 
 	puts("Bienvenido al kernelino\n", MAGENTA);
 
-//	BgaGetCapabilities();
-
-	BgaSetVideoMode(WIDTH,HEIGHT,BPP,1,0);
-
-	update_buffer();
-	drawPixel(20, 20, 0xff, 0xff, 0xff);
-	drawPixel(21, 20, 0xff, 0xff, 0xff);
-	drawPixel(22, 20, 0xff, 0xff, 0xff);
-
-	drawRect(0xff, 0xff, 0xff, 100, 20, 10, 10);
-
-	while(1) {
-		//update_video();
-	}
-
 	((EntryPoint)codeModuleAddress)();
 
 	// ncPrint("  Sample data module at 0x");
@@ -138,58 +110,4 @@ int main()
 	// ncPrint((char*)dataModuleAddress);
 
 	return 0;
-}
-
-
-unsigned char * bankAddress = (unsigned char *)0xA0000; 
-
-// Hardcodeada del bootloader de Pure64, para obtener esta direccion seteamos el modo vesa en 1
-// y modificamos el codigo para que no inicialice en modo video (solo setea )
-unsigned char ** addressAddress = (unsigned char **)(0x0000000000005C00 + 40);
-
-// con linear frame buffer
-void update_buffer() {
-	int i = 0;
-	unsigned char * linearBuffer = *addressAddress;
-
-	for (i = 0; i < WIDTH * HEIGHT * 3; ) { // VBE_DISPI_TOTAL_VIDEO_MEMORY_BYTES se pasa de largo
-		linearBuffer[i++] = 0;
-		linearBuffer[i++] = 0;
-		linearBuffer[i++] = 0;
-	}
-}
-
-// con banks
-void update_video() {
-	int i, j;
-	int size = 20;
-
-	for (j = 0; j < size; j++) {
-		BgaSetBank(j);
-		for (i = 0; i < VBE_DISPI_BANK_SIZE_KB * 1024; i++) {
-			bankAddress[i++] = 0;				//blue
-			bankAddress[i++] = 0xff;			//green
-			bankAddress[i] = 0;					//red
-		}
-	}
-}
-
-void drawPixel(int x, int y, int r, int g, int b) {
-	unsigned char * linearBuffer = *addressAddress;
-	int pos = x * WIDTH * 3 + y * 3;
-
-	linearBuffer[pos++] = b;
-	linearBuffer[pos++] = g;
-	linearBuffer[pos] = r;
-}
-
-void drawRect(int r, int g, int b, int w, int h, int x, int y) {
-	int i, j;
-
-	for (i = x; i < w * 3; i++) {
-		for (j = y; j < h * 3; j++) {
-			drawPixel(i, j, r, g, b);
-		}
-	}
-
 }

@@ -9,6 +9,9 @@
 int write(unsigned int fd, const void * buffer, unsigned int size);
 /* Retorna la cantidad de caracteres leidos */
 int read(unsigned int fd, const void * buffer, unsigned int size);
+/* Entra en modo video con los parametros dados */
+int video(unsigned int width, unsigned int height, unsigned int bpp);
+
 int exit(int code);
 
 #endif

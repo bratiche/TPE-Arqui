@@ -1,7 +1,12 @@
 #include <commands.h>
+#include <syscalls.h>
 #include <string.h>
 #include <stdio.h>
 #include <shell.h>
+
+#define DEFAULT_WIDTH 1024
+#define DEFAULT_HEIGHT 768
+#define DEFAULT_BPP 24
 
 static char * user = "user"; // TODO cuando implemente mayusculas en el driver del teclado esto tiene que ser $USER
 
@@ -25,4 +30,8 @@ int help(int argc, char ** argv) {
 		return -1;
 	}
 	return printf("help is comming!\n");
+}
+
+int start_video(int argc, char ** argv) {
+	return video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);
 }

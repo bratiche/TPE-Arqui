@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 #define BUFFER_SIZE 80
-#define COMMANDS_SIZE 2
+#define COMMANDS_SIZE 3
 
 #define ignore_spaces(str) { while (isspace(*str)) str++; }
 #define ignore_characters(str) { while (*str != 0 && !isspace(*str)) str++;}
@@ -105,6 +105,7 @@ void _get_username(void) {
 void init_commands(void) {
 	add_command(ECHO, "echo", "echo [arg]", echo, 1);
 	add_command(HELP, "help", "help [arg]?", help, 1);
+	add_command(VIDEO, "video", "video [width] [height] [bpp]", start_video, 3);
 }
 
 void add_command(command_id id, const char * name, const char * desc, command_fn fn, int argc) {
@@ -137,6 +138,12 @@ void excute_command() {
 			}
 
 			argc = parse_args(argv, args_start);
+
+			if (argc > command.argc) {
+				fprintf(STDERR, "Too many arguments!\n");
+				return;
+			}
+
 			command.fn(argc, argv);
 			return;
 		}

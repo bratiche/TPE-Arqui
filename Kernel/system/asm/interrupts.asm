@@ -135,9 +135,6 @@ _irq80Handler:
 	push rbp
 	mov rbp, rsp
 
-	mov rdi, rax
-	mov rsi, rbx
-
 	call syscallDispatcher
 
 	mov rsp, rbp
