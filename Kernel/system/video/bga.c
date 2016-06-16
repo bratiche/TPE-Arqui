@@ -71,19 +71,23 @@ unsigned char ** addressAddress = (unsigned char **)(0x0000000000005C00 + 40);
 
 void BgaDrawPixel(int x, int y, int r, int g, int b) {
     unsigned char * linearBuffer = *addressAddress;
-    int pos = x * width * 3 + y * 3;
+    int pos = y * width * 3 + x * 3;
+
+    if (pos > width * height * 3) {
+        BgaFillScreen(0xff, 0, 0);
+        return;
+    }
 
     linearBuffer[pos++] = b;
     linearBuffer[pos++] = g;
     linearBuffer[pos] = r;
 }
 
-//TODO fix
 void BgaDrawRect(int r, int g, int b, int x, int y, int w, int h) {
     int i, j;
 
-    for (i = x; i < w * 3; i++) {
-        for (j = y; j < h * 3; j++) {
+    for (i = x; i < x + w; i++) {
+        for (j = y; j < y + h; j++) {
             BgaDrawPixel(i, j, r, g, b);
         }
     }
@@ -147,10 +151,6 @@ void mandelbrot(int r, int g, int b){
 }
 
 void mandelbrot2(){
-
-
-
-
     int w = 1024;
     int h = 768;
     double pr, pi;           //real and imaginary part of the pixel p
@@ -195,18 +195,18 @@ void mandelbrot3(){
     int h = 768;
 
     //each iteration, it calculates: new = old*old + c, where c is a constant and old starts at current pixel
-  double cRe, cIm;           //real and imaginary part of the constant c, determines shape of the Julia Set
-  double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old
-  double zoom=1, moveX=0	, moveY=0; //you can change these to zoom and change position
-  //ColorRGB color; //the RGB color value for the pixel
-  int maxIterations=128; //after how much iterations the function should stop 
-  
+    double cRe, cIm;           //real and imaginary part of the constant c, determines shape of the Julia Set
+    double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old
+    double zoom=1, moveX=0	, moveY=0; //you can change these to zoom and change position
+    //ColorRGB color; //the RGB color value for the pixel
+    int maxIterations=128; //after how much iterations the function should stop 
 
-  //pick some values for the constant c, this determines the shape of the Julia Set
-  cRe = -0.7;
-  cIm = 0.27015;
 
-  //begin the program loop
+    //pick some values for the constant c, this determines the shape of the Julia Set
+    cRe = -0.7;
+    cIm = 0.27015;
+
+    //begin the program loop
   
     //draw the fractal
     for(int y = 0; y < h; y++){

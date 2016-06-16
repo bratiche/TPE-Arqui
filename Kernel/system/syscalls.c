@@ -17,7 +17,7 @@ static SYSCALL syscalls[SYSCALLS_SIZE];		// array de punteros a funcion para las
 syscallDispatcher : called when instruction int 80 is executed:
 -------------- System Calls Table: ----------------
 
-name	 	 rax(number)	rbx		rcx 	rdx
+name	 	 rdi(number)	rsi		rdx 	rcx
 
 sys_exit		1			code	-		-
 sys_read		3			fd		buffer	size
@@ -96,12 +96,16 @@ int sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3) {
 /* Starts VESA video mode with the given parameters */
 int sys_video(uint64_t width, uint64_t height, uint64_t bpp) {
 	puts("Starting video mode...", LIGHT_GREY);
+
+	int rectWidth = 500;
+	int rectHeight = 250;
 	
 	BgaSetVideoMode(width, height, 24, 1, 1);	// solo se acepta 24 bpp
-	BgaFillScreen(0x0, 0x0, 0x0);
+	BgaDrawRect(0, 0, 0xff, width / 2 - rectWidth / 2, height / 2 - rectHeight / 2, rectWidth, rectHeight);
+	//BgaFillScreen(0x0, 0x0, 0x0);
 	//mandelbrot(0xff,0xff,0xff);
 	//mandelbrot2();
-	mandelbrot3();
+	//mandelbrot3();
 
 	return 0;
 }
