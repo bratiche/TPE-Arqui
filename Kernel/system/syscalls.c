@@ -98,7 +98,10 @@ int sys_video(uint64_t width, uint64_t height, uint64_t bpp) {
 	puts("Starting video mode...", LIGHT_GREY);
 	
 	BgaSetVideoMode(width, height, 24, 1, 1);	// solo se acepta 24 bpp
-	BgaFillScreen(0, 0xff, 0);
+	BgaFillScreen(0x0, 0x0, 0x0);
+	//mandelbrot(0xff,0xff,0xff);
+	//mandelbrot2();
+	mandelbrot3();
 
 	return 0;
 }
