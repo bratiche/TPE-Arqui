@@ -1,6 +1,8 @@
 #ifndef BGA_H_
 #define BGA_H_
 
+#include <stdint.h>
+
 #define VBE_DISPI_TOTAL_VIDEO_MEMORY_MB  16
 #define VBE_DISPI_4BPP_PLANE_SHIFT       22
 
@@ -64,9 +66,9 @@ void BgaGetCapabilities(void);
 
 
 /* Functions to manipulate the screen's pixels */
-void BgaDrawPixel(int x, int y, int r, int g, int b);
-void BgaDrawRect(int r, int g, int b, int w, int h, int x, int y);
-void BgaFillScreen(int r, int g, int b);
+int BgaDrawPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b);
+void BgaDrawRect(uint8_t r, uint8_t g, uint8_t b, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+void BgaFillScreen(uint8_t r, uint8_t g, uint8_t b);
 
 
 #endif

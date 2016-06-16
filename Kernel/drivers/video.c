@@ -25,7 +25,6 @@ void fill(char ch, char attr) {
 }
 
 void clear(void) {
-	int i = 0;
 	fill(' ', LIGHT_GREY);
 	current_loc = 0;
 }

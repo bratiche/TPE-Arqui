@@ -10,6 +10,7 @@ static int sys_read(uint64_t fd, uint64_t buffer, uint64_t len);
 static int sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3);
 
 static int sys_video(uint64_t width, uint64_t height, uint64_t bpp);
+static int sys_draw(uint64_t x, uint64_t y, uint64_t color);
 
 static SYSCALL syscalls[SYSCALLS_SIZE];		// array de punteros a funcion para las syscalls
 
@@ -34,6 +35,7 @@ void init_syscalls() {
 	syscalls[SYS_READ] = sys_read;
 	syscalls[SYS_WRITE] = sys_write;
 	syscalls[SYS_VIDEO] = sys_video;
+	syscalls[SYS_DRAW] = sys_draw;
 }
 
 /* Retorna la cantidad de caracteres escritos */
@@ -102,10 +104,16 @@ int sys_video(uint64_t width, uint64_t height, uint64_t bpp) {
 	
 	BgaSetVideoMode(width, height, 24, 1, 1);	// solo se acepta 24 bpp
 	BgaDrawRect(0, 0, 0xff, width / 2 - rectWidth / 2, height / 2 - rectHeight / 2, rectWidth, rectHeight);
-	//BgaFillScreen(0x0, 0x0, 0x0);
-	//mandelbrot(0xff,0xff,0xff);
-	//mandelbrot2();
-	//mandelbrot3();
+	BgaFillScreen(0x0, 0x0, 0x0);
 
 	return 0;
+}
+
+/* Draws the pixel in the [x,y] position with the specified color */
+int sys_draw(uint64_t x, uint64_t y, uint64_t color) {
+	uint8_t r = (color >> 16) & 0xFF;
+	uint8_t g = (color >> 8) & 0xFF;
+	uint8_t b = color & 0xFF;
+
+	return BgaDrawPixel(x, y, r, g, b);
 }

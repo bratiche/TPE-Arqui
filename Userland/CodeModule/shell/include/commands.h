@@ -7,6 +7,7 @@ typedef enum {
 	ECHO,
 	HELP,
 	VIDEO,
+	FRACTAL,
 } command_id;
 
 typedef int (*command_fn)(int, char **);
@@ -22,5 +23,6 @@ typedef struct {
 int echo(int argc, char ** argv);
 int help(int argc, char ** argv);
 int start_video(int argc, char ** argv);
+int fractal(int argc, char ** argv);
 
 #endif

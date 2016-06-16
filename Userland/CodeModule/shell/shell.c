@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 #define BUFFER_SIZE 80
-#define COMMANDS_SIZE 3
+#define COMMANDS_SIZE 4
 
 #define ignore_spaces(str) { while (isspace(*str)) str++; }
 #define ignore_characters(str) { while (*str != 0 && !isspace(*str)) str++;}
@@ -77,7 +77,7 @@ void _get_username(void) {
 	char c;
 
 	do {
-		char buffer[MAX_USERNAME_SIZE] = { 0 };
+		clean_buffer();
 		printf("\nPlease enter your username (up to %d characters): ", MAX_USERNAME_SIZE);
 		while ((c = getchar()) != '\n') {
 			if (c == '\b') {
@@ -106,6 +106,7 @@ void init_commands(void) {
 	add_command(ECHO, "echo", "echo [arg]", echo, 1);
 	add_command(HELP, "help", "help [arg]?", help, 1);
 	add_command(VIDEO, "video", "video [width] [height] [bpp]", start_video, 3);
+	add_command(FRACTAL, "fractal", "fractal [number]", fractal, 1);
 }
 
 void add_command(command_id id, const char * name, const char * desc, command_fn fn, int argc) {
