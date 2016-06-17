@@ -12,8 +12,8 @@ static void scroll(void);
 static void delete(void);
 static void update_cursor(void);
 
-char * video = (char *) 0xB8000;
-unsigned int current_loc = 0;
+static char * video = (char *) 0xB8000;
+static unsigned int current_loc = 0;
 
 void fill(char ch, char attr) {
 	unsigned int i = 0;
@@ -133,6 +133,7 @@ void putnumber(int n, char attr) {
 }
 
 void putchar(char ch, char attr) {
+	int i = 4;	// tab size		
 
 	switch(ch) {
 		case '\n':
@@ -141,6 +142,11 @@ void putchar(char ch, char attr) {
 		case '\b':
 			if (current_loc > 0) {
 				delete();
+			}
+			break;
+		case '\t':
+			while(i--) {
+				putchar(' ', DEFAULT);
 			}
 			break;
 		default:

@@ -14,22 +14,36 @@ static char * user = "user"; // TODO cuando implemente mayusculas en el driver d
 static char username[MAX_USERNAME_SIZE];
 
 int echo(int argc, char ** argv) {
-	if (argc != 1) {
-		fputs(STDERR, "Invalid arguments!\n");
+	int i = 0;
+	char * arg;
+
+	if (argc == 0) {
+		fputs(STDERR, "No arguments!\n");
 		return -1;
 	}
 
-	if (strcmp(user, argv[0]) == 0) {
-		get_username(username);
-		return printf("%s\n", username);
+	for (; i < argc; i++) {
+		arg = argv[i];
+		if (strcmp(user, arg) == 0) {
+			get_username(username);
+			printf("%s ", username);
+		}
+		else {
+			printf("%s ", arg);
+		}
 	}
-	return printf("%s\n", argv[0]);
+
+	putchar('\n');
+
+	return 0;
 }
 
 int help(int argc, char ** argv) {
 	if (argc > 1) {
+		fputs(STDERR, "Too much arguments!\n");
 		return -1;
 	}
+
 	return printf("help is comming!\n");
 }
 
@@ -42,7 +56,6 @@ int fractal(int argc, char ** argv) {
 		fputs(STDERR, "Invalid arguments!\n");
 		return -1;
 	}
-
 
 	char * option = argv[0];
 
@@ -64,4 +77,21 @@ int fractal(int argc, char ** argv) {
 	}
 
 	return 0;
+}
+
+#define LINES 25
+
+int clear(int argc, char ** argv) {
+	int i;
+	for (i = 0; i < LINES  - 1; i++) {
+		putchar('\n');
+	}
+	
+	putchar('\b');
+
+	return 0;
+}
+
+int _exit(int argc, char ** argv) {
+	return exit(0);
 }

@@ -99,8 +99,6 @@ int main()
 	init_syscalls();	// set software interrupt handler functions
 	init_interrupts();	// set hardware interrupt handler functions 
 
-	puts("Bienvenido al kernelino\n", MAGENTA);
-
 	((EntryPoint)codeModuleAddress)();
 
 	// ncPrint("  Sample data module at 0x");

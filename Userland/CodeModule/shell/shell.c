@@ -6,12 +6,11 @@
 #include <ctype.h>
 
 #define BUFFER_SIZE 80
-#define COMMANDS_SIZE 4
 
 #define ignore_spaces(str) { while (isspace(*str)) str++; }
 #define ignore_characters(str) { while (*str != 0 && !isspace(*str)) str++;}
 
-static void add_command(command_id id, const char * name, const char * desc, command_fn fn, int argc);
+static void add_command(command_id id, const char * name, const char * desc, command_fn fn);
 static int prefix(const char * str1, const char * str2);
 static int parse_args(char ** argv, char * str);
 
@@ -22,8 +21,8 @@ static void clean_buffer(void);
 static void prompt(void);
 static int is_empty(void);
 
-char buffer[BUFFER_SIZE] = { 0 };
-int current_pos = 0;
+static char buffer[BUFFER_SIZE] = { 0 };
+static int current_pos = 0;
 
 static char username[MAX_USERNAME_SIZE];
 static char * os_name = "undef";
@@ -59,6 +58,7 @@ void update_shell() {
 			}	
 			break;
 		case ' ':		// no imprimo ni agrego al buffer los espacios iniciales
+		case '\t':
 			if (current_pos == 0) {
 				return;
 			}
@@ -103,18 +103,19 @@ void _get_username(void) {
 }
 
 void init_commands(void) {
-	add_command(ECHO, "echo", "echo [arg]", echo, 1);
-	add_command(HELP, "help", "help [arg]?", help, 1);
-	add_command(VIDEO, "video", "video [width] [height] [bpp]", start_video, 3);
-	add_command(FRACTAL, "fractal", "fractal [number]", fractal, 1);
+	add_command(ECHO, "echo", "echo [arg]", echo);
+	add_command(HELP, "help", "help [arg]?", help);
+	add_command(VIDEO, "video", "video [width] [height] [bpp]", start_video);
+	add_command(FRACTAL, "fractal", "fractal [number]", fractal);
+	add_command(CLEAR, "clear", "clear", clear);
+	add_command(EXIT, "exit", "exit", _exit);
 }
 
-void add_command(command_id id, const char * name, const char * desc, command_fn fn, int argc) {
+void add_command(command_id id, const char * name, const char * desc, command_fn fn) {
 	commands[id].id = id;
 	commands[id].name = name;
 	commands[id].desc = desc;
 	commands[id].fn = fn;
-	commands[id].argc = argc;
 }
 
 void excute_command() {
@@ -139,11 +140,6 @@ void excute_command() {
 			}
 
 			argc = parse_args(argv, args_start);
-
-			if (argc > command.argc) {
-				fprintf(STDERR, "Too many arguments!\n");
-				return;
-			}
 
 			command.fn(argc, argv);
 			return;

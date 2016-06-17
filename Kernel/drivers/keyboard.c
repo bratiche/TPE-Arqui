@@ -11,10 +11,14 @@
 
 static void key_pressed(char keycode);
 static void print_buffer(void);
+static int isalpha(char keycode);
 
-static unsigned char buffer[BUFFER_SIZE] = { EMPTY };
+static unsigned char kb_buffer[BUFFER_SIZE] = { EMPTY };
 static int write_pos = 0;
 static int read_pos = 0;
+
+static int shift_pressed = 0;
+static int caps_lock_on = 0;
 
 void keyboard_handler(void) {
 	unsigned char status;
@@ -32,30 +36,53 @@ void keyboard_handler(void) {
 void print_buffer() {
 	int i;
 	for (i = 0; i < BUFFER_SIZE; i++) {
-		putchar(buffer[i], RED);
+		putchar(kb_buffer[i], RED);
 	}
 }
 
 /* Strores the keys pressed in the buffer */
 void key_pressed(char keycode) {
 
-	if (keycode < 0) {
-		return;
+	/* Check special characters */
+	switch (keycode) {
+		case CAPS_LOCK:
+			caps_lock_on = !caps_lock_on;
+			return;
+		case LS_PRESSED:
+		case RS_PRESSED:
+			shift_pressed = 1;
+			return;
+		case LS_RELEASED:	
+		case RS_RELEASED:
+			shift_pressed = 0;
+			return;
+	}
+
+	if (!(keycode & KEY_RELEASED)) {
+		int letter = isalpha(keycode);
+		int alternate = (letter && caps_lock_on);
+
+		if (shift_pressed) {
+			alternate = !alternate;
+		}
+
+		unsigned char ascii = keyboard_map[alternate][keycode];
+
+		if (ascii != 0) {
+			kb_buffer[write_pos++] = ascii;
+
+			if (write_pos == BUFFER_SIZE) {
+				write_pos = 0;
+			}
+		}
 	}
  
-	//TODO shift, caps lock, etc
-
-	buffer[write_pos++] = keyboard_map[keycode];
-
-	if (write_pos == BUFFER_SIZE) {
-		write_pos = 0;
-	}
 }
 
 /* Returns the ASCCI code of the last key pressed or -1 if the buffer is empty */
 unsigned char get_key(void) {
-	unsigned char key = buffer[read_pos];
-	buffer[read_pos++] = EMPTY;
+	unsigned char key = kb_buffer[read_pos];
+	kb_buffer[read_pos++] = EMPTY;
 
 	if (read_pos == BUFFER_SIZE) {
 		read_pos = 0;
@@ -65,5 +92,9 @@ unsigned char get_key(void) {
 }
 
 int is_empty(void) {
-	return (buffer[read_pos] == EMPTY);
+	return (kb_buffer[read_pos] == EMPTY);
+}
+
+int isalpha(char keycode) {
+	return ((keycode >= Q && keycode <= P) || (keycode >= A && keycode <= L) || (keycode >= Z && keycode <= M));
 }
