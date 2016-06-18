@@ -35,6 +35,4 @@ void putnumber(int n, char attr);
 void putchar(char ch, char attr);
 void puts(char *str, char attr);
 
-//void setattr(char attr);
-
 #endif

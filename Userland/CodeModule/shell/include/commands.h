@@ -7,7 +7,6 @@
 typedef enum {
 	ECHO,
 	HELP,
-	VIDEO,
 	FRACTAL,
 	CLEAR,
 	EXIT,
@@ -24,7 +23,6 @@ typedef struct {
 
 int echo(int argc, char ** argv);
 int help(int argc, char ** argv);
-int start_video(int argc, char ** argv);
 int fractal(int argc, char ** argv);
 int clear(int argc, char ** argv);
 int _exit(int argc, char ** argv);

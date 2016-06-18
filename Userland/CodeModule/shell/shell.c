@@ -5,7 +5,7 @@
 #include <commands.h>
 #include <ctype.h>
 
-#define BUFFER_SIZE 80
+#define BUFFER_SIZE 256
 
 #define ignore_spaces(str) { while (isspace(*str)) str++; }
 #define ignore_characters(str) { while (*str != 0 && !isspace(*str)) str++;}
@@ -105,7 +105,6 @@ void _get_username(void) {
 void init_commands(void) {
 	add_command(ECHO, "echo", "echo [arg]", echo);
 	add_command(HELP, "help", "help [arg]?", help);
-	add_command(VIDEO, "video", "video [width] [height] [bpp]", start_video);
 	add_command(FRACTAL, "fractal", "fractal [number]", fractal);
 	add_command(CLEAR, "clear", "clear", clear);
 	add_command(EXIT, "exit", "exit", _exit);

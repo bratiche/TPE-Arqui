@@ -11,18 +11,22 @@
 #define STDOUT	1
 #define STDERR	2
 
-int getchar(void);
-int fgetc(int fd);
 void putchar(char c);
 void fputc(int fd, char c);
-
-//gets
-//fgets
-int fputs(int fd, char * str);
 int puts(char * str);
+int fputs(int fd, char * str);
+int fputsn(int fd, char * str, int n);
 int printf(const char * fmt, ...);
 int fprintf(int fd, const char * fmt, ...);
 int vfprintf(int fd, const char * fmt, va_list ap);
 
+int getchar(void);
+int fgetc(int fd);
+char * gets(char * str, int n);
+char * fgets(int fd, char * str, int n);
+int scanf(const char * fmt, ...);
+int fscanf(int fd, const char * fmt, ...);
+int sscanf(const char * str, const char * fmt, ...);
+int vfscanf(int fd, const char * fmt, va_list ap);
 
 #endif

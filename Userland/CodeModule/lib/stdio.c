@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <syscalls.h>
 #include <stdarg.h>
 
@@ -15,16 +16,6 @@ void putchar(char c) {
 
 void fputc(int fd, char c) {
 	write(fd, &c, 1);
-}
-
-int getchar() {
-	return fgetc(STDIN);
-}
-
-int fgetc(int fd) {
-	char c;
-	read(fd, &c, 1);
-	return c;
 }
 
 int puts(char * str) {
@@ -181,4 +172,134 @@ static int num_to_base(unsigned int value, char * buffer, unsigned int base) {
 	}
 
 	return digits;
+}
+
+/*****************************************************/
+
+static int read_arg(int fd, va_list ap, char option);
+static int read_dec(int fd, int * ptr);
+
+int getchar() {
+	return fgetc(STDIN);
+}
+
+int fgetc(int fd) {
+	char c;
+	read(fd, &c, 1);
+	return c;
+}
+
+char * gets(char * str, int n) {
+	return fgets(STDIN, str, n);
+}
+
+char * fgets(int fd, char * str, int n) {
+	char c;
+	int read = 0;
+
+	while ((c = fgetc(fd)) != EOF && c != '\n' && read < n) {
+		if (c > 0) {
+			str[read++] = c;
+			fputc(STDOUT, c);
+		}
+	}
+
+	if (read == 0 && c == EOF) {
+		return NULL;
+	}
+
+	str[read] = 0;
+	return str;
+}
+
+int scanf(const char * fmt, ...) {
+	va_list ap;
+	int read;
+
+	va_start(ap, fmt);
+	read = vfscanf(STDIN, fmt, ap);
+	va_end(ap);
+
+	return read;
+}
+
+int fscanf(int fd, const char * fmt, ...) {
+	va_list ap;
+	int read;
+
+	va_start(ap, fmt);
+	read = vfscanf(fd, fmt, ap);
+	va_end(ap);
+
+	return read;
+}
+
+//TODO
+int sscanf(const char * str, const char * fmt, ...) {
+	return -1;
+}
+
+//TODO
+int vfscanf(int fd, const char * fmt, va_list ap) {
+	int read = 0;
+	char c;
+
+	while ((c = *fmt++) != 0) {
+		if (c == '%') {
+			char option = *(fmt++);
+			if (read_arg(fd, ap, option) == 0) {
+				return read;
+			}
+			read++;
+		}
+		else {
+			fputc(fd, c);
+		}
+	}
+
+	return read;
+}
+
+#define MAX_SIZE 64
+
+//TODO
+static int read_arg(int fd, va_list ap, char option) {
+	int read = 0;
+	char * arg;
+
+	switch (option) {
+		case 's':
+			read = (fgets(fd, va_arg(ap, char *), MAX_SIZE) == NULL ? 0 : 1);
+			break;
+		case 'd':
+			read = read_dec(fd, va_arg(ap, int *));
+			break;
+		case 'c':
+			read = 1;
+			arg = va_arg(ap, char *);
+			(*arg) = fgetc(fd);
+			fputc(STDOUT, *arg);
+			break;
+	}
+
+	return read;
+}
+
+//TODO esta re buguete
+static int read_dec(int fd, int * ptr) {
+	int number = 0;
+	int digits = 0;
+	char c;
+
+	while (digits < 9 && (c = fgetc(fd)) != '\n') {
+		fputc(fd, c);
+		if (c < '0' || c > '9') {
+			return 0;
+		}
+		number = number * 10 + c - '0';
+		digits++;
+	}
+
+	*ptr = number;
+	return 1;
 }

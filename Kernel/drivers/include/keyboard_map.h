@@ -17,6 +17,11 @@
 #define Z 44
 #define M 50
 
+#define UP_ARROW 72
+#define DOWN_ARROW 80
+#define LEFT_ARROW 75
+#define RIGHT_ARROW 77
+
 
 /* The following array is taken from 
     http://www.osdever.net/bkerndev/Docs/keyboard.htm

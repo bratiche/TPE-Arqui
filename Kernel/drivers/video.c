@@ -25,8 +25,9 @@ void fill(char ch, char attr) {
 }
 
 void clear(void) {
-	fill(' ', LIGHT_GREY);
+	fill(' ', DEFAULT);
 	current_loc = 0;
+	update_cursor();
 }
 
 int putchar_at(char ch, char attr, int r, int c) {
@@ -146,7 +147,7 @@ void putchar(char ch, char attr) {
 			break;
 		case '\t':
 			while(i--) {
-				putchar(' ', DEFAULT);
+				putchar(' ', attr);
 			}
 			break;
 		default:

@@ -65,9 +65,18 @@ int sys_write(uint64_t fd, uint64_t buf, uint64_t size) {
 
 static int read_stdin(char * buffer, int len) {
 	int i = 0;
-	char c;
+	unsigned char c;
 
-	while (i < len && !is_empty()) {
+	/* Esto se cuelga en la shell cuando se tipea un caracter no aceptado como primer caracter de comando('\b' o ' ')*/
+	/* Pero, pero hace que funcione scanf (porque queda esperando hasta llenar el buffer)*/
+	// do {
+	// 	c = get_key();
+	// 	if (c != EMPTY) {
+	// 		buffer[i++] = c;
+	// 	}
+	// } while (i < len && buffer[i] != 0);
+
+	while (i < len) {
 		c = get_key();
 		buffer[i++] = c;
 	}
@@ -78,11 +87,10 @@ static int read_stdin(char * buffer, int len) {
 /* Retorna la cantidad de caracteres leidos */
 int sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
 	char * buffer = (char *)buf;
-	int len = size;
 
 	switch (fd) {
 		case STDIN:
-			return read_stdin(buffer, len);
+			return read_stdin(buffer, size);
 		default:  
 			return 0;
 	}

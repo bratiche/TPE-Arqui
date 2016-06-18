@@ -9,24 +9,21 @@
 #define DEFAULT_HEIGHT 768
 #define DEFAULT_BPP 24
 
-static char * user = "user"; // TODO cuando implemente mayusculas en el driver del teclado esto tiene que ser $USER
+static char * user = "USER";
 
 static char username[MAX_USERNAME_SIZE];
 
 int echo(int argc, char ** argv) {
-	int i = 0;
+	int i;
 	char * arg;
 
-	if (argc == 0) {
-		fputs(STDERR, "No arguments!\n");
-		return -1;
-	}
-
-	for (; i < argc; i++) {
+	for (i = 0; i < argc; i++) {
 		arg = argv[i];
-		if (strcmp(user, arg) == 0) {
-			get_username(username);
-			printf("%s ", username);
+		if (arg[0] == '$') {
+			if (strcmp(user, arg + 1) == 0) {
+				get_username(username);
+				printf("%s ", username);
+			}
 		}
 		else {
 			printf("%s ", arg);
@@ -47,10 +44,6 @@ int help(int argc, char ** argv) {
 	return printf("help is comming!\n");
 }
 
-int start_video(int argc, char ** argv) {
-	return video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);
-}
-
 int fractal(int argc, char ** argv) {
 	if (argc != 1) {
 		fputs(STDERR, "Invalid arguments!\n");
@@ -64,11 +57,11 @@ int fractal(int argc, char ** argv) {
 		//mandelbrot();
 	}
 	else if (strcmp(option, "2") == 0) {
-		start_video(0, 0);
+		video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
 		mandelbrot2();
 	}
 	else if (strcmp(option, "3") == 0) {
-		start_video(0, 0);
+		video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);
 		mandelbrot3();
 	}
 	else {

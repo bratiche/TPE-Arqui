@@ -8,16 +8,6 @@ static void printf_test(void);
 
 int main() {
 
-	//char * msg = "Hello,World!\n";
-
-	// write(STDOUT, msg, strlen(msg));
-
-	// write(STDERR, msg, strlen(msg));
-
-	//exit(0); //funciona
-
-	//printf_test();
-
 	init_shell();
 
 	while (1) {
