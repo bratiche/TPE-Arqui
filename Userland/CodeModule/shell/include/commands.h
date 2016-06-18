@@ -2,7 +2,7 @@
 #define COMMAND_H_
 
 #define MAX_ARGS 10
-#define COMMANDS_SIZE 6
+#define COMMANDS_SIZE 5
 
 typedef enum {
 	ECHO,

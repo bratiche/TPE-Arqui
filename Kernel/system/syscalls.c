@@ -67,6 +67,7 @@ static int read_stdin(char * buffer, int len) {
 	int i = 0;
 	unsigned char c;
 
+	//TODO
 	/* Esto se cuelga en la shell cuando se tipea un caracter no aceptado como primer caracter de comando('\b' o ' ')*/
 	/* Pero, pero hace que funcione scanf (porque queda esperando hasta llenar el buffer)*/
 	// do {
@@ -111,8 +112,8 @@ int sys_video(uint64_t width, uint64_t height, uint64_t bpp) {
 	int rectHeight = 250;
 	
 	BgaSetVideoMode(width, height, 24, 1, 1);	// solo se acepta 24 bpp
-	BgaDrawRect(0, 0, 0xff, width / 2 - rectWidth / 2, height / 2 - rectHeight / 2, rectWidth, rectHeight);
-	BgaFillScreen(0x0, 0x0, 0x0);
+	//BgaDrawRect(0, 0, 0xff, width / 2 - rectWidth / 2, height / 2 - rectHeight / 2, rectWidth, rectHeight);
+	BgaFillScreen(0xff, 0xff, 0xff);
 
 	return 0;
 }

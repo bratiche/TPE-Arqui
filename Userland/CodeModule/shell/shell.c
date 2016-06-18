@@ -15,7 +15,7 @@ static int prefix(const char * str1, const char * str2);
 static int parse_args(char ** argv, char * str);
 
 static void _get_username(void);
-static void excute_command(void);
+static void execute_command(void);
 static void init_commands(void);
 static void clean_buffer(void);
 static void prompt(void);
@@ -25,7 +25,7 @@ static char buffer[BUFFER_SIZE] = { 0 };
 static int current_pos = 0;
 
 static char username[MAX_USERNAME_SIZE];
-static char * os_name = "undef";
+static char * os_name = "os";
 
 command_t commands[COMMANDS_SIZE];
 
@@ -47,7 +47,7 @@ void update_shell() {
 			if (current_pos != 0) {
 				putchar('\n');
 			}
-			excute_command();
+			execute_command();
 			prompt();
 			clean_buffer();
 			break;
@@ -103,8 +103,8 @@ void _get_username(void) {
 }
 
 void init_commands(void) {
-	add_command(ECHO, "echo", "echo [arg]", echo);
-	add_command(HELP, "help", "help [arg]?", help);
+	add_command(ECHO, "echo", "echo [args]", echo);
+	add_command(HELP, "help", "help [command]?", help);
 	add_command(FRACTAL, "fractal", "fractal [number]", fractal);
 	add_command(CLEAR, "clear", "clear", clear);
 	add_command(EXIT, "exit", "exit", _exit);
@@ -117,7 +117,7 @@ void add_command(command_id id, const char * name, const char * desc, command_fn
 	commands[id].fn = fn;
 }
 
-void excute_command() {
+void execute_command() {
 	int i = 0;
 
 	if (is_empty()) {
@@ -197,4 +197,8 @@ int is_empty() {
 
 void get_username(char * buffer) {
 	strcpy(username, buffer);
+}
+
+command_t get_command(command_id id) {
+	return commands[id];
 }

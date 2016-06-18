@@ -1,7 +1,10 @@
 #include <fractals.h>
 #include <syscalls.h>
 
-void mandelbrot(int r, int g, int b){
+//Fuente: http://www.splinter.com.au/converting-hsv-to-rgb-colour-using-c
+static void HsvToRgb(unsigned char *r, unsigned char *g, unsigned char *b, unsigned char h, unsigned char s, unsigned char v);
+
+void mandelbrot(int iter, int r, int g, int b, int r2, int g2, int b2) {   ///TODO pasar para externo, iteraciones...
 
     double ImageWidth=1024;
     double ImageHeight=768;
@@ -11,7 +14,6 @@ void mandelbrot(int r, int g, int b){
     double MaxIm = MinIm+(MaxRe-MinRe)*ImageHeight/ImageWidth;
     double Re_factor = (MaxRe-MinRe)/(ImageWidth-1);
     double Im_factor = (MaxIm-MinIm)/(ImageHeight-1);
-    unsigned MaxIterations = 30;
 
     for(unsigned y=0; y<ImageHeight; ++y)
     {
@@ -23,7 +25,7 @@ void mandelbrot(int r, int g, int b){
             double Z_re = c_re, Z_im = c_im;
             int isInside = 1;
             unsigned n = 0;
-            for(n=0; n<MaxIterations; ++n)
+            for(n=0; n<iter; ++n)
             {
                 double Z_re2 = Z_re*Z_re, Z_im2 = Z_im*Z_im;
                 if(Z_re2 + Z_im2 > 4)
@@ -35,14 +37,17 @@ void mandelbrot(int r, int g, int b){
                 Z_re = Z_re2 - Z_im2 + c_re;
             }
             if(isInside) { 
-            	draw(x, y,r,g,b); 
+            	draw(x, y, r, g, b); 
             }
-            else{
-                //draw(x, y,0xff-n,0xff-n,0xff-n);
+            else if (n <= (iter / 2) - 1) {        // de interno a negro
+                draw(x, y, (r2 / iter) * n, (g2 / iter) * n, (b2 / iter) * n);
+            }
+            else if (n >= iter / 2 && n <= iter - 1 ) {      
+                draw(x, y, (r2 / iter) * n, (g2 / iter) * n, (b2 / iter) * n);
+                //draw(x, y, r2 - n % 255, g2 - n % 255, b2 - n % 255);
             }
         }
     }
-
 
 }
 
@@ -77,15 +82,18 @@ void mandelbrot2(){
             }
         
             //use color model conversion to get rainbow palette, make brightness black if maxIterations reached
-            draw(x,y , i % 256 , 255 , 255 * (i < maxIterations));
+            unsigned char r, g, b;
+            HsvToRgb(&r, &g, &b, i % 256, 255, 255 * (i < maxIterations));
+
             //draw the pixel
+            draw(x, y, r, g, b);
 
         }
     }
 
 }
 
-void mandelbrot3(){
+void juliaSet() {
 
     int w = 1024;
     int h = 768;
@@ -126,11 +134,53 @@ void mandelbrot3(){
             if((newRe * newRe + newIm * newIm) > 4) break;
           }
           //use color model conversion to get rainbow palette, make brightness black if maxIterations reached
-          draw(x,y,i % 256, 255, 255 * (i < maxIterations));
+          unsigned char r, g, b;
+          HsvToRgb(&r, &g, &b, i % 256, 255, 255 * (i < maxIterations));
+
           //draw the pixel
+          draw(x, y, r, g, b);
           
         }
     }
 
 
+}
+
+static void HsvToRgb(unsigned char *r, unsigned char *g, unsigned char *b, unsigned char h, unsigned char s, unsigned char v)
+{
+    unsigned char region, fpart, p, q, t;
+
+    if(s == 0) {
+        /* color is grayscale */
+        *r = *g = *b = v;
+        return;
+    }
+
+    /* make hue 0-5 */
+    region = h / 43;
+    /* find remainder part, make it from 0-255 */
+    fpart = (h - (region * 43)) * 6;
+
+    /* calculate temp vars, doing integer multiplication */
+    p = (v * (255 - s)) >> 8;
+    q = (v * (255 - ((s * fpart) >> 8))) >> 8;
+    t = (v * (255 - ((s * (255 - fpart)) >> 8))) >> 8;
+
+    /* assign temp vars based on color cone region */
+    switch(region) {
+        case 0:
+            *r = v; *g = t; *b = p; break;
+        case 1:
+            *r = q; *g = v; *b = p; break;
+        case 2:
+            *r = p; *g = v; *b = t; break;
+        case 3:
+            *r = p; *g = q; *b = v; break;
+        case 4:
+            *r = t; *g = p; *b = v; break;
+        default:
+            *r = v; *g = p; *b = q; break;
+    }
+
+    return;
 }

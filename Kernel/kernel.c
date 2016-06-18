@@ -21,7 +21,6 @@ static void * const dataModuleAddress = (void*)0x500000;
 
 typedef int (*EntryPoint)();
 
-
 void clearBSS(void * bssAddress, uint64_t bssSize)
 {
 	memset(bssAddress, 0, bssSize);
@@ -98,6 +97,7 @@ int main()
 	clear();
 	init_syscalls();	// set software interrupt handler functions
 	init_interrupts();	// set hardware interrupt handler functions 
+	puts((char*)dataModuleAddress, GREEN);
 
 	((EntryPoint)codeModuleAddress)();
 
@@ -105,7 +105,7 @@ int main()
 	// ncPrintHex((uint64_t)dataModuleAddress);
 	// ncNewline();
 	// ncPrint("  Sample data module contents: ");
-	// ncPrint((char*)dataModuleAddress);
+	// 
 
 	return 0;
 }

@@ -195,7 +195,7 @@ void delete(void) {
 }
 
 void scroll(void) {
-	memcpy((void *)video, (void *)(video + COLS * 2), SCREENSIZE - COLS * 2);
+	memcpy((void *)(video + COLS * 2), (void *)(video + COLS * 4), SCREENSIZE - COLS * 2);	// deja la primer linea vacia
 	memsetw((void *)(video + SCREENSIZE - COLS * 2), ' ' | (BLACK << 8), COLS);
 	current_loc -= COLS * 2;
 }
