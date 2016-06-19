@@ -2,6 +2,7 @@
 #include <syscalls.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <shell.h>
 
 static void printf_test(void);
@@ -10,10 +11,23 @@ int main() {
 
 	init_shell();
 
-	char buffer[50] = {0};
+	// char buffer[50] = {0};
 
-	read(STDDATA, buffer, 50);
-	puts(buffer);
+	// char c;
+	// int i = 0;
+	// // while ((c=fgetc(STDDATA)) != EOF) {
+	// // 	buffer[i++] = c;
+	// // 	putchar(c);
+	// // }
+
+	char * ptr = malloc(4);
+	printf("%d\n", ptr);
+
+	ptr = malloc(10);
+	printf("%d\n", ptr);
+
+	ptr = malloc(0);
+	printf("%d\n", ptr);
 
 	while (1) {
 		update_shell();

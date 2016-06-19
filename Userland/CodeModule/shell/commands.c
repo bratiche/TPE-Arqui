@@ -5,10 +5,6 @@
 #include <shell.h>
 #include <fractals.h>
 
-#define DEFAULT_WIDTH 1024
-#define DEFAULT_HEIGHT 768
-#define DEFAULT_BPP 24
-
 static char * user = "USER";
 
 static char username[MAX_USERNAME_SIZE];
@@ -37,7 +33,7 @@ int echo(int argc, char ** argv) {
 
 int help(int argc, char ** argv) {
 	if (argc > 1) {
-		fputs(STDERR, "Too much arguments!\n");
+		fputs(STDERR, "Too many arguments!\n");
 		return -1;
 	}
 
@@ -92,25 +88,47 @@ int help(int argc, char ** argv) {
 	return 0;
 }
 
+static int video_mode_enabled = 0;
+
 int fractal(int argc, char ** argv) {
 	if (argc > 1) {
-		fputs(STDERR, "Invalid arguments!\n");
+		fputs(STDERR, "Too many arguments!\n");
 		return -1;
+	}
+
+	if (argc == 0) {
+		printf("Available fractals: \n");
+		printf("\t1- Mandelbrot\n");
+		printf("\t2- Julia Set\n");
+		return 0;
 	}
 
 	char * option = argv[0];
 
 	if (strcmp(option, "1") == 0) {
-		video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
-		//mandelbrot(30, 0xff, 0xff, 0xff, 0, 0xff, 0);
-		mandelbrot(30, 0, 0, 0, 0xff, 0, 0);
+
+		while (1) {
+			char name[5] = {0}; 
+			int iter, r, g, b, r2, g2, b2;
+			int args = fscanf(STDDATA, "%s %d %d %d %d %d %d %d", name, &iter, &r, &g, &b, &r2, &g2, &b2);
+
+			if (args != 8) {
+				fprintf(STDERR, "Wrong format!\n");
+				return -1;
+			}
+			if (!video_mode_enabled) {
+				video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
+				video_mode_enabled = 1;
+			}
+
+			mandelbrot(iter, r, g, b, r2, g2, b2);
+		}
 	}
 	else if (strcmp(option, "2") == 0) {
-		video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
-		mandelbrot2();
-	}
-	else if (strcmp(option, "3") == 0) {
-		video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);
+		if (!video_mode_enabled) {
+			video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
+			video_mode_enabled = 1;
+		}
 		juliaSet();
 	}
 	else {

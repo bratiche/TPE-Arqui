@@ -1,6 +1,6 @@
 #include <syscalls.h>
 
-extern int _syscall(uint64_t id, uint64_t arg1, uint64_t arg2, uint64_t arg3);
+extern uint64_t _syscall(uint64_t id, uint64_t arg1, uint64_t arg2, uint64_t arg3);
 
 int exit(int code) {
 	return _syscall(1, code, 0, 0);
@@ -26,4 +26,8 @@ int draw(unsigned int x, unsigned int y, uint8_t r, uint8_t g, uint8_t b) {
 	color = color << 8;
 	color += b;
 	return _syscall(6, x, y, color);
+}
+
+void * sbrk(unsigned int increment) {
+	return (void *)_syscall(7, increment, 0, 0);
 }

@@ -14,8 +14,9 @@
 #define SYS_WRITE 	4
 #define SYS_VIDEO	5
 #define SYS_DRAW	6
+#define SYS_SBRK	7
 
-typedef int (*SYSCALL)(uint64_t arg1, uint64_t arg2, uint64_t arg3);	// puntero a funcion de manejo de una syscall
+typedef uint64_t (*SYSCALL)(uint64_t arg1, uint64_t arg2, uint64_t arg3);	// puntero a funcion de manejo de una syscall
 
 void init_syscalls(void);
 

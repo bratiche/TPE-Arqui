@@ -1,10 +1,20 @@
 #include <stdlib.h>
-
-static char * mem_start = 5000;	// start of data module, todo syscall to retrieve this address
+#include <syscalls.h>
 
 void * malloc(uint64_t size) {
-	char * ret = mem_start;
-	mem_start += size;
+	void * ret = sbrk(0);	// pido la direccion actual
+	sbrk(size);				// "incremento" el segmento de datos
+	return ret;
+}
+
+void * calloc(uint64_t size) {
+	int i;
+	char * ret = malloc(size);
+
+	for (i = 0; i < size; i++) {
+		ret[i] = 0;
+	}
+
 	return (void *)ret;
 }
 

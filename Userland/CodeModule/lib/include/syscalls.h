@@ -18,4 +18,6 @@ int video(unsigned int width, unsigned int height, unsigned int bpp);
 /* Pinta el pixel x,y */
 int draw(unsigned int x, unsigned int y, uint8_t r, uint8_t g, uint8_t b);
 
+void * sbrk(unsigned int increment);
+
 #endif

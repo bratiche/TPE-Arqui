@@ -97,7 +97,8 @@ int main()
 	clear();
 	init_syscalls();	// set software interrupt handler functions
 	init_interrupts();	// set hardware interrupt handler functions 
-	puts((char*)dataModuleAddress, GREEN);
+	//puts((char*)dataModuleAddress, GREEN);
+	puts("Arqui OS", GREEN);
 
 	((EntryPoint)codeModuleAddress)();
 

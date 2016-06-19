@@ -4,21 +4,19 @@
 //Fuente: http://www.splinter.com.au/converting-hsv-to-rgb-colour-using-c
 static void HsvToRgb(unsigned char *r, unsigned char *g, unsigned char *b, unsigned char h, unsigned char s, unsigned char v);
 
-void mandelbrot(int iter, int r, int g, int b, int r2, int g2, int b2) {   ///TODO pasar para externo, iteraciones...
+void mandelbrot(int iter, uint8_t r, uint8_t g, uint8_t b, uint8_t r2, uint8_t g2, uint8_t b2) {
 
-    double ImageWidth=1024;
-    double ImageHeight=768;
     double MinRe = -2.0;
     double MaxRe = 1.0;
     double MinIm = -1.2;
-    double MaxIm = MinIm+(MaxRe-MinRe)*ImageHeight/ImageWidth;
-    double Re_factor = (MaxRe-MinRe)/(ImageWidth-1);
-    double Im_factor = (MaxIm-MinIm)/(ImageHeight-1);
+    double MaxIm = MinIm + (MaxRe - MinRe) * DEFAULT_HEIGHT / DEFAULT_WIDTH;
+    double Re_factor = (MaxRe - MinRe) / (DEFAULT_WIDTH - 1);
+    double Im_factor = (MaxIm - MinIm) / (DEFAULT_HEIGHT - 1);
 
-    for(unsigned y=0; y<ImageHeight; ++y)
+    for(unsigned y=0; y<DEFAULT_HEIGHT; ++y)
     {
         double c_im = MaxIm - y*Im_factor;
-        for(unsigned x=0; x<ImageWidth; ++x)
+        for(unsigned x=0; x<DEFAULT_WIDTH; ++x)
         {
             double c_re = MinRe + x*Re_factor;
 
@@ -50,52 +48,7 @@ void mandelbrot(int iter, int r, int g, int b, int r2, int g2, int b2) {   ///TO
 
 }
 
-void mandelbrot2(){
-    int w = 1024;
-    int h = 768;
-    double pr, pi;           //real and imaginary part of the pixel p
-  	double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old z
-  	double zoom = 1, moveX = -0.5, moveY = 0; //you can change these to zoom and change position
-  	//ColorRGB color; //the RGB color value for the pixel
-  	int maxIterations = 100;//after how much iterations the function should stop
-
-  	//loop through every pixel
-    for(int y = 0; y < h; y++){
-        for(int x = 0; x < w; x++){
-            //calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-            pr = 1.5 * (x - w / 2) / (0.5 * zoom * w) + moveX;
-            pi = (y - h / 2) / (0.5 * zoom * h) + moveY;
-            newRe = newIm = oldRe = oldIm = 0; //these should start at 0,0
-            //"i" will represent the number of iterations
-            int i;
-            //start the iteration process
-            for(i = 0; i < maxIterations; i++){
-                //remember value of previous iteration
-                oldRe = newRe;
-                oldIm = newIm;
-                //the actual iteration, the real and imaginary part are calculated
-                newRe = oldRe * oldRe - oldIm * oldIm + pr;
-                newIm = 2 * oldRe * oldIm + pi;
-                //if the point is outside the circle with radius 2: stop
-                if((newRe * newRe + newIm * newIm) > 4) break;
-            }
-        
-            //use color model conversion to get rainbow palette, make brightness black if maxIterations reached
-            unsigned char r, g, b;
-            HsvToRgb(&r, &g, &b, i % 256, 255, 255 * (i < maxIterations));
-
-            //draw the pixel
-            draw(x, y, r, g, b);
-
-        }
-    }
-
-}
-
 void juliaSet() {
-
-    int w = 1024;
-    int h = 768;
 
     //each iteration, it calculates: new = old*old + c, where c is a constant and old starts at current pixel
     double cRe, cIm;           //real and imaginary part of the constant c, determines shape of the Julia Set
@@ -112,12 +65,12 @@ void juliaSet() {
     //begin the program loop
   
     //draw the fractal
-    for(int y = 0; y < h; y++){
-        for(int x = 0; x < w; x++)
+    for(int y = 0; y < DEFAULT_HEIGHT; y++){
+        for(int x = 0; x < DEFAULT_WIDTH; x++)
         {
           //calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-          newRe = 1.5 * (x - w / 2) / (0.5 * zoom * w) + moveX;
-          newIm = (y - h / 2) / (0.5 * zoom * h) + moveY;
+          newRe = 1.5 * (x - DEFAULT_WIDTH / 2) / (0.5 * zoom * DEFAULT_WIDTH) + moveX;
+          newIm = (y - DEFAULT_HEIGHT / 2) / (0.5 * zoom * DEFAULT_HEIGHT) + moveY;
           //i will represent the number of iterations
           int i;
           //start the iteration process

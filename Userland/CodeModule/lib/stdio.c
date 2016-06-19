@@ -178,6 +178,7 @@ static int num_to_base(unsigned int value, char * buffer, unsigned int base) {
 
 static int read_arg(int fd, va_list ap, char option);
 static int read_dec(int fd, int * ptr);
+static int read_str(int fd, char * ptr);
 
 int getchar() {
 	return fgetc(STDIN);
@@ -252,9 +253,6 @@ int vfscanf(int fd, const char * fmt, va_list ap) {
 			}
 			read++;
 		}
-		else {
-			fputc(fd, c);
-		}
 	}
 
 	return read;
@@ -262,14 +260,13 @@ int vfscanf(int fd, const char * fmt, va_list ap) {
 
 #define MAX_SIZE 64
 
-//TODO
 static int read_arg(int fd, va_list ap, char option) {
 	int read = 0;
 	char * arg;
 
 	switch (option) {
 		case 's':
-			read = (fgets(fd, va_arg(ap, char *), MAX_SIZE) == NULL ? 0 : 1);
+			read = read_str(fd, va_arg(ap, char *));
 			break;
 		case 'd':
 			read = read_dec(fd, va_arg(ap, int *));
@@ -280,19 +277,38 @@ static int read_arg(int fd, va_list ap, char option) {
 			(*arg) = fgetc(fd);
 			fputc(STDOUT, *arg);
 			break;
+		default:
+			break;
 	}
 
 	return read;
 }
 
-//TODO esta re buguete
+// si hay mas de un espacio se rompe todo
+static int read_str(int fd, char * ptr) {
+	char c;
+	int read = 0;
+
+	while ((c = fgetc(fd)) != EOF && c != '\n' && c != ' ') {
+		if (c > 0) {
+			ptr[read++] = c;
+		}
+	}
+
+	if (read == 0 && c == EOF) {
+		return 0;
+	}
+
+	ptr[read] = 0;
+	return 1;
+}
+
 static int read_dec(int fd, int * ptr) {
 	int number = 0;
 	int digits = 0;
 	char c;
 
-	while (digits < 9 && (c = fgetc(fd)) != '\n') {
-		fputc(fd, c);
+	while (digits < 9 && (c = fgetc(fd)) != '\n' && c != EOF && c != ' ') {
 		if (c < '0' || c > '9') {
 			return 0;
 		}
@@ -301,5 +317,5 @@ static int read_dec(int fd, int * ptr) {
 	}
 
 	*ptr = number;
-	return 1;
+	return digits>0;
 }

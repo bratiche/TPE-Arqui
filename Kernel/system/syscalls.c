@@ -3,14 +3,17 @@
 #include <keyboard.h>
 #include <bga.h>
 
+//#define EOF -1
+
 extern void haltcpu(void); // Termina la ejecucion de la cpu.
 
-static int sys_write(uint64_t fd, uint64_t buffer, uint64_t len);
-static int sys_read(uint64_t fd, uint64_t buffer, uint64_t len);
-static int sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3);
+static uint64_t sys_write(uint64_t fd, uint64_t buffer, uint64_t len);
+static uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t len);
+static uint64_t sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3);
 
-static int sys_video(uint64_t width, uint64_t height, uint64_t bpp);
-static int sys_draw(uint64_t x, uint64_t y, uint64_t color);
+static uint64_t sys_video(uint64_t width, uint64_t height, uint64_t bpp);
+static uint64_t sys_draw(uint64_t x, uint64_t y, uint64_t color);
+static uint64_t sys_sbrk(uint64_t increment, uint64_t arg2, uint64_t arg3);
 
 static SYSCALL syscalls[SYSCALLS_SIZE];		// array de punteros a funcion para las syscalls
 
@@ -36,10 +39,11 @@ void init_syscalls() {
 	syscalls[SYS_WRITE] = sys_write;
 	syscalls[SYS_VIDEO] = sys_video;
 	syscalls[SYS_DRAW] = sys_draw;
+	syscalls[SYS_SBRK] = sys_sbrk;
 }
 
 /* Retorna la cantidad de caracteres escritos */
-int sys_write(uint64_t fd, uint64_t buf, uint64_t size) {
+uint64_t sys_write(uint64_t fd, uint64_t buf, uint64_t size) {
 	char * buffer = (char *)buf;
 	int len = size;
 	char attr;
@@ -63,7 +67,7 @@ int sys_write(uint64_t fd, uint64_t buf, uint64_t size) {
 	return size - len - 1;
 }
 
-static int read_stdin(char * buffer, int len) {
+static uint64_t read_stdin(char * buffer, int len) {
 	int i = 0;
 	unsigned char c;
 
@@ -87,19 +91,26 @@ static int read_stdin(char * buffer, int len) {
 
 static void * const dataModuleAddress = (void*)0x500000;
 
-static int read_stddata(char * buffer, int len) {
-	char * dir = (char *)(dataModuleAddress);
+static uint64_t read_stddata(char * buffer, int len) {
+	static int read_index = 0;
+	char * dir = (char *)(dataModuleAddress + read_index);
 	int i = 0;
 
 	while (i < len && *dir != 0) {
 		buffer[i++] = *dir++;
+		read_index++;	
+	}
+	
+	if (*dir == EOF || i == 0) {
+		read_index = 0;
+		buffer[i] = EOF;
 	}
 
 	return i;
 }
 
 /* Retorna la cantidad de caracteres leidos */
-int sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
+uint64_t sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
 	char * buffer = (char *)buf;
 
 	switch (fd) {
@@ -112,7 +123,7 @@ int sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
 	}
 }
 
-int sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3) {
+uint64_t sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3) {
 	puts("Exit code: ", LIGHT_GREY);
 	putnumber(code, LIGHT_GREY);
 	haltcpu();
@@ -120,24 +131,28 @@ int sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3) {
 }
 
 /* Starts VESA video mode with the given parameters */
-int sys_video(uint64_t width, uint64_t height, uint64_t bpp) {
+uint64_t sys_video(uint64_t width, uint64_t height, uint64_t bpp) {
 	puts("Starting video mode...", LIGHT_GREY);
 
-	int rectWidth = 500;
-	int rectHeight = 250;
-	
 	BgaSetVideoMode(width, height, 24, 1, 1);	// solo se acepta 24 bpp
-	//BgaDrawRect(0, 0, 0xff, width / 2 - rectWidth / 2, height / 2 - rectHeight / 2, rectWidth, rectHeight);
-	BgaFillScreen(0xff, 0xff, 0xff);
+	BgaFillScreen(0, 0, 0);
 
 	return 0;
 }
 
 /* Draws the pixel in the [x,y] position with the specified color */
-int sys_draw(uint64_t x, uint64_t y, uint64_t color) {
+uint64_t sys_draw(uint64_t x, uint64_t y, uint64_t color) {
 	uint8_t r = (color >> 16) & 0xFF;
 	uint8_t g = (color >> 8) & 0xFF;
 	uint8_t b = color & 0xFF;
 
 	return BgaDrawPixel(x, y, r, g, b);
+}
+
+static void * MEM_START = (void *)0x600000;
+
+/* Returns the new top of the data segment, NOTE: if increment is 0 then returns the old one */
+uint64_t sys_sbrk(uint64_t increment, uint64_t arg2, uint64_t arg3) {
+	MEM_START += increment;
+	return (uint64_t)MEM_START;
 }
