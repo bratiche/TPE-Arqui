@@ -10,6 +10,11 @@ int main() {
 
 	init_shell();
 
+	char buffer[50] = {0};
+
+	read(STDDATA, buffer, 50);
+	puts(buffer);
+
 	while (1) {
 		update_shell();
 	}

@@ -6,6 +6,7 @@
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
+#define STDDATA 3
 #define SYSCALLS_SIZE 10
 
 #define SYS_EXIT 	1

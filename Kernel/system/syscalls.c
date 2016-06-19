@@ -85,6 +85,19 @@ static int read_stdin(char * buffer, int len) {
 	return i;
 }
 
+static void * const dataModuleAddress = (void*)0x500000;
+
+static int read_stddata(char * buffer, int len) {
+	char * dir = (char *)(dataModuleAddress);
+	int i = 0;
+
+	while (i < len && *dir != 0) {
+		buffer[i++] = *dir++;
+	}
+
+	return i;
+}
+
 /* Retorna la cantidad de caracteres leidos */
 int sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
 	char * buffer = (char *)buf;
@@ -92,6 +105,8 @@ int sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
 	switch (fd) {
 		case STDIN:
 			return read_stdin(buffer, size);
+		case STDDATA:
+			return read_stddata(buffer, size);
 		default:  
 			return 0;
 	}

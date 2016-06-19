@@ -39,13 +39,12 @@ void mandelbrot(int iter, int r, int g, int b, int r2, int g2, int b2) {   ///TO
             if(isInside) { 
             	draw(x, y, r, g, b); 
             }
-            else if (n <= (iter / 2) - 1) {        // de interno a negro
+            else {
                 draw(x, y, (r2 / iter) * n, (g2 / iter) * n, (b2 / iter) * n);
             }
-            else if (n >= iter / 2 && n <= iter - 1 ) {      
-                draw(x, y, (r2 / iter) * n, (g2 / iter) * n, (b2 / iter) * n);
-                //draw(x, y, r2 - n % 255, g2 - n % 255, b2 - n % 255);
-            }
+            /*else if (n >= iter / 2 && n <= iter - 1 ) { // de color2 a blanco
+                draw(x, y, r2 + ((0xff / iter) * n), g2 + ((0xff / iter) * n), b2 + ((0xff / iter) * n));                
+            }*/
         }
     }
 

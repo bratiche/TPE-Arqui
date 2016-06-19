@@ -10,6 +10,7 @@
 #define STDIN	0
 #define STDOUT	1
 #define STDERR	2
+#define STDDATA 3
 
 void putchar(char c);
 void fputc(int fd, char c);
