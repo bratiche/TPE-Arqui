@@ -87,7 +87,7 @@ int help(int argc, char ** argv) {
 				printf("\tSets the date with the given parameters\n");
 				break;
 			case SLEEP:
-				printf("\tSleeps for the given milliseconds.\n");
+				printf("\tSleeps for the given seconds.\n");
 				break;
 		}
 
@@ -218,11 +218,10 @@ int sleep(int argc, char ** argv) {
 		return -1;
 	}
 
-	unsigned long millis;
+	unsigned int seconds;
 
-	// sscanf(argv[0], "%d", &millis);
-	millis = atoi(argv[0]);
-	printf("Sleeping for %d milliseconds...\n", millis);
+	// sscanf(argv[0], "%d", &seconds);
+	seconds = atoi(argv[0]);
 
-	return wait(millis);
+	return wait(seconds * 1000);
 }

@@ -112,7 +112,7 @@ void init_commands(void) {
 	add_command(DATE, "date", "date", _date);
 	add_command(SET_TIME, "settime", "settime [hour] [minutes] [seconds]", _set_time);
 	add_command(SET_DATE, "setdate", "setdate [day] [month] [year]", _set_date);
-	add_command(SLEEP, "sleep", "sleep [millis] [halt]", sleep);
+	add_command(SLEEP, "sleep", "sleep [seconds]", sleep);
 }
 
 void add_command(command_id id, const char * name, const char * desc, command_fn fn) {
