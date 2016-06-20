@@ -22,7 +22,8 @@
 
 #define INDEX_OUT_OF_BOUNDS_ERROR -1
 
-void clear(void);
+void clear_screen(void);
+void clear_console(void);
 void fill(char ch, char attr);
 
 /* Prints at screen[r][c] */
@@ -34,5 +35,7 @@ int puts_at(char *str, char attr, int r, int c);
 void putnumber(int n, char attr);
 void putchar(char ch, char attr);
 void puts(char *str, char attr);
+
+void hide_cursor(void);
 
 #endif

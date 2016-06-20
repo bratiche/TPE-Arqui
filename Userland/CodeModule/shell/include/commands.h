@@ -2,7 +2,7 @@
 #define COMMAND_H_
 
 #define MAX_ARGS 10
-#define COMMANDS_SIZE 5
+#define COMMANDS_SIZE 10
 
 typedef enum {
 	ECHO,
@@ -10,6 +10,11 @@ typedef enum {
 	FRACTAL,
 	CLEAR,
 	EXIT,
+	TIME,
+	DATE,
+	SET_TIME,
+	SET_DATE,
+	SLEEP, 
 } command_id;
 
 typedef int (*command_fn)(int, char **);
@@ -24,7 +29,12 @@ typedef struct {
 int echo(int argc, char ** argv);
 int help(int argc, char ** argv);
 int fractal(int argc, char ** argv);
-int clear(int argc, char ** argv);
+int _clear(int argc, char ** argv);
 int _exit(int argc, char ** argv);
+int _time(int argc, char ** argv);
+int _date(int argc, char ** argv);
+int _set_time(int argc, char ** argv);
+int _set_date(int argc, char ** argv);
+int sleep(int argc, char ** argv);
 
 #endif

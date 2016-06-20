@@ -84,29 +84,13 @@ void * initializeKernelBinary()
 
 int main()
 {	
-	//ncPrint("[Kernel Main]");
-	//ncNewline();
-	//ncPrint("  Sample code module at 0x");
-	//ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	//ncNewline();
-	//ncPrint("  Calling the sample code module returned: ");
-	//ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
-	//ncNewline();
-	//ncNewline();
-
-	clear();
-	init_syscalls();	// set software interrupt handler functions
-	init_interrupts();	// set hardware interrupt handler functions 
-	//puts((char*)dataModuleAddress, GREEN);
-	puts("Arqui OS", GREEN);
+	clear_screen();
+	init_syscalls();
+	init_interrupts();
+	
+	puts_at("Arqui OS", GREEN, 0, 0);
 
 	((EntryPoint)codeModuleAddress)();
-
-	// ncPrint("  Sample data module at 0x");
-	// ncPrintHex((uint64_t)dataModuleAddress);
-	// ncNewline();
-	// ncPrint("  Sample data module contents: ");
-	// 
 
 	return 0;
 }

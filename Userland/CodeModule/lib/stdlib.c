@@ -21,3 +21,15 @@ void * calloc(uint64_t size) {
 void free(void * ptr) {
 	return;
 }
+
+int atoi(const char * str) {
+	char c;
+	int i = 0;
+	while ((c = *str++) != 0) {
+		if (c < '0' || c > '9') {
+			break;
+		}
+		i = i * 10 + c - '0';
+	}
+	return i;
+}

@@ -20,14 +20,14 @@ int main() {
 	// // 	putchar(c);
 	// // }
 
-	char * ptr = malloc(4);
-	printf("%d\n", ptr);
+	// char * ptr = malloc(4);
+	// printf("%d\n", ptr);
 
-	ptr = malloc(10);
-	printf("%d\n", ptr);
+	// ptr = malloc(10);
+	// printf("%d\n", ptr);
 
-	ptr = malloc(0);
-	printf("%d\n", ptr);
+	// ptr = malloc(0);
+	// printf("%d\n", ptr);
 
 	while (1) {
 		update_shell();

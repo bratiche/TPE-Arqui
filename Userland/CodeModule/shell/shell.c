@@ -78,7 +78,7 @@ void _get_username(void) {
 
 	do {
 		clean_buffer();
-		printf("\nPlease enter your username (up to %d characters): ", MAX_USERNAME_SIZE);
+		printf("Please enter your username (up to %d characters): ", MAX_USERNAME_SIZE);
 		while ((c = getchar()) != '\n') {
 			if (c == '\b') {
 				if (i > 0) {
@@ -93,7 +93,7 @@ void _get_username(void) {
 		}
 		if (i > MAX_USERNAME_SIZE) {
 			i = 0;
-			fprintf(STDERR, "\nToo long...");
+			fprintf(STDERR, "\nToo long...\n");
 		}
 		else if (i > 0) {
 			strcpy(buffer, username);
@@ -106,8 +106,13 @@ void init_commands(void) {
 	add_command(ECHO, "echo", "echo [args]", echo);
 	add_command(HELP, "help", "help [command]?", help);
 	add_command(FRACTAL, "fractal", "fractal [number]", fractal);
-	add_command(CLEAR, "clear", "clear", clear);
+	add_command(CLEAR, "clear", "clear", _clear);
 	add_command(EXIT, "exit", "exit", _exit);
+	add_command(TIME, "time", "time", _time);
+	add_command(DATE, "date", "date", _date);
+	add_command(SET_TIME, "settime", "settime [hour] [minutes] [seconds]", _set_time);
+	add_command(SET_DATE, "setdate", "setdate [day] [month] [year]", _set_date);
+	add_command(SLEEP, "sleep", "sleep [millis] [halt]", sleep);
 }
 
 void add_command(command_id id, const char * name, const char * desc, command_fn fn) {

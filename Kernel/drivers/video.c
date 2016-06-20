@@ -2,6 +2,10 @@
 #include <video.h>
 #include <io.h>
 
+/* Taken from: http://web.stanford.edu/class/cs140/projects/pintos/specs/freevga/vga/crtcreg.htm */
+#define CRTC_ADDR_PORT 0x3D4
+#define CRTC_DATA_PORT 0x3D5
+
 #define ROWS 25
 #define COLS 80
 #define SCREENSIZE ROWS * COLS * 2
@@ -13,7 +17,7 @@ static void delete(void);
 static void update_cursor(void);
 
 static char * video = (char *) 0xB8000;
-static unsigned int current_loc = 0;
+static unsigned int current_loc = COLS * 2;
 
 void fill(char ch, char attr) {
 	unsigned int i = 0;
@@ -22,11 +26,25 @@ void fill(char ch, char attr) {
 		video[i++] = ch;
 		video[i++] = attr;
 	}
+	current_loc = 0;
+	update_cursor();
 }
 
-void clear(void) {
+void clear_screen() {
 	fill(' ', DEFAULT);
-	current_loc = 0;
+	current_loc = COLS * 2;
+	update_cursor();
+}
+
+void clear_console(void) {
+	unsigned int i = COLS * 2;
+
+	for (; i < SCREENSIZE; ) {
+		video[i++] = ' ';
+		video[i++] = DEFAULT;
+	}
+
+	current_loc = COLS * 2;
 	update_cursor();
 }
 
@@ -171,10 +189,10 @@ void puts(char *str, char attr) {
 }
 
 void update_cursor(void) {
-   	write_port(0x3D4, 14);
-    write_port(0x3D5, (current_loc / 2) >> 8);
-    write_port(0x3D4, 15);
-    write_port(0x3D5, current_loc / 2);
+   	write_port(CRTC_ADDR_PORT, 14);
+    write_port(CRTC_DATA_PORT, (current_loc / 2) >> 8);
+    write_port(CRTC_ADDR_PORT, 15);
+    write_port(CRTC_DATA_PORT, current_loc / 2);
 }
 
 void delete(void) {
@@ -197,5 +215,10 @@ void delete(void) {
 void scroll(void) {
 	memcpy((void *)(video + COLS * 2), (void *)(video + COLS * 4), SCREENSIZE - COLS * 2);	// deja la primer linea vacia
 	memsetw((void *)(video + SCREENSIZE - COLS * 2), ' ' | (BLACK << 8), COLS);
-	current_loc -= COLS * 2;
+	current_loc -= (COLS * 2);
+}
+
+void hide_cursor(void) {
+	write_port(CRTC_ADDR_PORT, 0x0A);
+	write_port(CRTC_DATA_PORT, 0x20);
 }

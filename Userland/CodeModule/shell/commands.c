@@ -2,6 +2,7 @@
 #include <syscalls.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <shell.h>
 #include <fractals.h>
 
@@ -73,6 +74,21 @@ int help(int argc, char ** argv) {
 			case EXIT:
 				printf("\tExits the shell.\n");
 				break;
+			case TIME:
+				printf("\tEnables/disables time in the top right corner of the shell.\n");
+				break;
+			case DATE:
+				printf("\tPrints the date in the console.\n");
+				break;
+			case SET_TIME:
+				printf("\tSets the time with the given parameters\n");
+				break;
+			case SET_DATE:
+				printf("\tSets the date with the given parameters\n");
+				break;
+			case SLEEP:
+				printf("\tSleeps for the given milliseconds.\n");
+				break;
 		}
 
 		return 0;
@@ -88,7 +104,6 @@ int help(int argc, char ** argv) {
 	return 0;
 }
 
-static int video_mode_enabled = 0;
 
 int fractal(int argc, char ** argv) {
 	if (argc > 1) {
@@ -116,19 +131,13 @@ int fractal(int argc, char ** argv) {
 				fprintf(STDERR, "Wrong format!\n");
 				return -1;
 			}
-			if (!video_mode_enabled) {
-				video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
-				video_mode_enabled = 1;
-			}
 
+			video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
 			mandelbrot(iter, r, g, b, r2, g2, b2);
 		}
 	}
 	else if (strcmp(option, "2") == 0) {
-		if (!video_mode_enabled) {
-			video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
-			video_mode_enabled = 1;
-		}
+		video(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_BPP);	// entra en modo video
 		juliaSet();
 	}
 	else {
@@ -139,19 +148,81 @@ int fractal(int argc, char ** argv) {
 	return 0;
 }
 
-#define LINES 25
-
-int clear(int argc, char ** argv) {
-	int i;
-	for (i = 0; i < LINES  - 1; i++) {
-		putchar('\n');
-	}
-	
-	putchar('\b');
-
+int _clear(int argc, char ** argv) {
+	clear();
 	return 0;
 }
 
 int _exit(int argc, char ** argv) {
 	return exit(0);
+}
+
+int _time(int argc, char ** argv) {
+	if (argc != 0) {
+		fputs(STDERR, "Too many arguments!\n");
+		return -1;
+	}
+	time();
+	return 0;
+}
+
+int _date(int argc, char ** argv) {
+	if (argc != 0) {
+		fputs(STDERR, "Too many arguments!\n");
+		return -1;
+	}
+	char * d = date();
+	printf("%s\n", d);
+	return 0;
+}
+
+//TODO use sscanf instead of atoi to validate the parameters
+int _set_time(int argc, char ** argv) {
+	if (argc != 3) {
+		fprintf(STDERR, "Invalid arguments!\n");
+		return -1;
+	}
+
+	int hour, minutes, seconds;
+	
+	// sscanf(argv[0], "%d", &hour);
+	// sscanf(argv[1], "%d", &minutes);
+	// sscanf(argv[2], "%d", &seconds);
+	hour = atoi(argv[0]);
+	minutes = atoi(argv[1]);
+	seconds = atoi(argv[2]);
+
+	return set_time(hour, minutes, seconds);
+}
+
+int _set_date(int argc, char ** argv) {
+	if (argc != 3) {
+		fprintf(STDERR, "Too few arguments!\n");
+		return -1;
+	}
+	int day, month, year;
+
+	// sscanf(argv[0], "%d", &day);
+	// sscanf(argv[1], "%d", &month);
+	// sscanf(argv[2], "%d", &year);
+	day = atoi(argv[0]);
+	month = atoi(argv[1]);
+	year = atoi(argv[2]);
+
+	return set_date(day, month, year);
+}
+
+int sleep(int argc, char ** argv) {
+	if (argc != 1) {
+		fprintf(STDERR, "Invalid arguments!\n");
+		return -1;
+	}
+
+	unsigned long millis;
+
+	// sscanf(argv[0], "%d", &millis);
+	millis = atoi(argv[0]);
+	printf("Sleeping for %d milliseconds...\n", millis);
+
+	return wait(millis);
 }

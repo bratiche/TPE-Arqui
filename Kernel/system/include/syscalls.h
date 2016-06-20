@@ -7,14 +7,24 @@
 #define STDOUT 1
 #define STDERR 2
 #define STDDATA 3
-#define SYSCALLS_SIZE 10
 
-#define SYS_EXIT 	1
-#define SYS_READ 	3
-#define SYS_WRITE 	4
-#define SYS_VIDEO	5
-#define SYS_DRAW	6
-#define SYS_SBRK	7
+#define SYSCALLS_SIZE 14
+
+enum {
+	SYS_EXIT = 1,
+	SYS_CLEAR,
+	SYS_READ,
+	SYS_WRITE,
+	SYS_VIDEO,
+	SYS_DRAW,
+	SYS_SBRK,
+	
+	SYS_TIME,
+	SYS_DATE,
+	SYS_SET_TIME,
+	SYS_SET_DATE,
+	SYS_WAIT,
+};
 
 typedef uint64_t (*SYSCALL)(uint64_t arg1, uint64_t arg2, uint64_t arg3);	// puntero a funcion de manejo de una syscall
 
