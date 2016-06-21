@@ -3,7 +3,7 @@
 #include <bga.h>
 
 /* Functions to set up the VESA video mode */ 
-
+/* Source: http://wiki.osdev.org/Bochs_VBE_Extensions */
 void BgaWriteRegister(unsigned short IndexValue, unsigned short DataValue) {
 
     write_port_word(VBE_DISPI_IOPORT_INDEX, IndexValue);
