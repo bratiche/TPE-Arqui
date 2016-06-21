@@ -101,3 +101,17 @@ char * strstr(const char * str1, const char * str2) {
 
 	return start;
 }
+
+/* Returns the lenght of str1 if str1 is prefix of str2, else returns 0 */
+int prefix(const char * str1, const char * str2) {
+	int i = 0;
+
+	while (str1[i] != 0) {
+		if (str2[i] == 0 || str1[i] != str2[i]) {
+			return 0;
+		}
+		i++;
+	}
+
+	return i;
+}

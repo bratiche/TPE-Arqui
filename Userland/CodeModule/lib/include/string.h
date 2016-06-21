@@ -12,4 +12,7 @@ char * strchr(const char * str, char c);
 /* Returns a pointer to the first occurrence of str2 in str1, or NULL if not present*/
 char * strstr(const char * str1, const char * str2);
 
+/* Returns the length of str1 if str1 is prefix of str2, else returns 0 */
+int prefix(const char * str1, const char * str2);
+
 #endif

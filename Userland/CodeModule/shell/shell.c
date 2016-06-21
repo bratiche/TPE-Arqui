@@ -10,13 +10,12 @@
 #define ignore_spaces(str) { while (isspace(*str)) str++; }
 #define ignore_characters(str) { while (*str != 0 && !isspace(*str)) str++;}
 
+static void init_commands(void);
 static void add_command(command_id id, const char * name, const char * desc, command_fn fn);
-static int prefix(const char * str1, const char * str2);
 static int parse_args(char ** argv, char * str);
+static void execute_command(void);
 
 static void _get_username(void);
-static void execute_command(void);
-static void init_commands(void);
 static void clean_buffer(void);
 static void prompt(void);
 static int is_empty(void);
@@ -153,21 +152,6 @@ void execute_command() {
 	}
 
 	fprintf(STDERR, "Invalid command!\n");
-}
-
-// TODO move to string.c
-/* Returns the lenght of str1 if str1 is prefix of str2, else returns 0 */
-int prefix(const char * str1, const char * str2) {
-	int i = 0;
-
-	while (str1[i] != 0) {
-		if (str2[i] == 0 || str1[i] != str2[i]) {
-			return 0;
-		}
-		i++;
-	}
-
-	return i;
 }
 
 int parse_args(char ** argv, char * str) {
