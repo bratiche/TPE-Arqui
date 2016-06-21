@@ -21,13 +21,12 @@ extern void picMasterMask(uint8_t mask);
 extern void picSlaveMask(uint8_t mask);
 
 DESCR_INT * idt;
-static ISR routines[ISR_SIZE];				// arrays de punteros a funcion para las interrupciones
+static ISR routines[ISR_SIZE];				// array de punteros a funcion para las interrupciones
 
 /* Sets all idt entries, uses the idtr provided by Pure64 */
 static void init_idt() {
     idt = 0;
 
-    //TODO checkear
     set_idt_entry(0x20, 0x08, (uint64_t)&_irq00Handler, 0x8E);
     set_idt_entry(0x21, 0x08, (uint64_t)&_irq01Handler, 0x8E);    
     set_idt_entry(0x80, 0x08, (uint64_t)&_irq80Handler, 0x8E);  

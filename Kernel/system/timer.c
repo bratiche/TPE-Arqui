@@ -1,6 +1,5 @@
 #include <timer.h>
 #include <video.h>
-#include <rtc.h>
 
 #define TICKS_PER_SECOND 18
 #define MAX_TASKS 5

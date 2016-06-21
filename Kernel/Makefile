@@ -2,7 +2,7 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 SOURCES=$(wildcard *.c) $(wildcard drivers/*.c) $(wildcard system/*.c) $(wildcard system/video/*.c)  
-SOURCES_ASM=$(wildcard system/asm/*.asm) $(wildcard drivers/*.asm)
+SOURCES_ASM=$(wildcard system/asm/*.asm)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
 LOADERSRC=loader.asm
