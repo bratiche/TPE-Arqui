@@ -2,6 +2,7 @@
 #include <string.h>
 #include <syscalls.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 static int print_arg(int fd, va_list ap, char option);
 static int print_hex(int fd, int hex);
@@ -9,6 +10,8 @@ static int print_dec(int fd, int dec);
 static int print_oct(int fd, int oct);
 static int print_bin(int fd, int bin);
 static int num_to_base(unsigned int value, char * buffer, unsigned int base);
+
+static int vfprintf(int fd, const char * fmt, va_list ap);
 
 void putchar(char c) {
 	fputc(STDOUT, c);
@@ -58,14 +61,24 @@ int fprintf(int fd, const char * fmt, ...) {
 	return written;	
 }
 
-int vfprintf(int fd, const char * fmt, va_list ap) {
+#define SUPPORTED_PRINTF_FORMATS "sxdobc"
+
+static int vfprintf(int fd, const char * fmt, va_list ap) {
 	int written = 0;
 	char c;
 
 	while ((c = *fmt++) != 0) {
 		if (c == '%') {
-			char option = *(fmt++);
-			written += print_arg(fd, ap, option);
+			char option = *fmt;
+			if (strchr(SUPPORTED_PRINTF_FORMATS, option) == NULL) {
+				fputc(fd, '%');
+				written++;
+			}
+			else {
+				fmt++;
+				written += print_arg(fd, ap, option);
+			}
+
 		}
 		else {
 			fputc(fd, c);
@@ -97,10 +110,10 @@ static int print_arg(int fd, va_list ap, char option) {
 			break;
 		case 'c':
 			fputc(fd, va_arg(ap, int) & UCHAR_MAX);
-			written++;
+			written = 1;
 			break;
 		default:
-			return written;		// error de formato
+			break;		// error de formato
 	}
 
 	return written;
@@ -176,9 +189,14 @@ static int num_to_base(unsigned int value, char * buffer, unsigned int base) {
 
 /*****************************************************/
 
-static int read_arg(int fd, va_list ap, char option);
-static int read_dec(int fd, int * ptr);
-static int read_str(int fd, char * ptr);
+static int vfscanf(int fd, const char * fmt, va_list ap);
+static int vsscanf(const char * buffer, const char * fmt, va_list ap);
+
+static int read_arg(const char * buffer, va_list ap, char option, char nextchar);
+/* Reads until a space or the nextchar is found */
+static int read_str(const char * buffer, char * ptr, char nextchar);
+/* Reads until a non-digit character is found or the number is too big */
+static int read_dec(const char * buffer, int * ptr);
 
 int getchar() {
 	return fgetc(STDIN);
@@ -200,9 +218,25 @@ char * fgets(int fd, char * str, int n) {
 
 	while ((c = fgetc(fd)) != EOF && c != '\n' && read < n) {
 		if (c > 0) {
-			str[read++] = c;
-			fputc(STDOUT, c);
+			if (c == '\b') {
+				if (read > 0) {
+					if (fd == STDIN) {
+						fputc(STDOUT, c);
+					}
+					str[--read] = 0;
+				}
+			}
+			else {
+				if (fd == STDIN) {
+					fputc(STDOUT, c);
+				}
+				str[read++] = c;
+			}
 		}
+	}
+
+	if (fd == STDIN) {
+		fputc(STDOUT, '\n');
 	}
 
 	if (read == 0 && c == EOF) {
@@ -213,6 +247,7 @@ char * fgets(int fd, char * str, int n) {
 	return str;
 }
 
+/* Based on code from http://mirror.fsf.org/pmon2000/3.x/src/lib/libc/scanf.c */
 int scanf(const char * fmt, ...) {
 	va_list ap;
 	int read;
@@ -235,47 +270,96 @@ int fscanf(int fd, const char * fmt, ...) {
 	return read;
 }
 
-//TODO
 int sscanf(const char * str, const char * fmt, ...) {
-	return -1;
-}
+	int read;
+	va_list ap;
 
-//TODO
-int vfscanf(int fd, const char * fmt, va_list ap) {
-	int read = 0;
-	char c;
-
-	while ((c = *fmt++) != 0) {
-		if (c == '%') {
-			char option = *(fmt++);
-			if (read_arg(fd, ap, option) == 0) {
-				return read;
-			}
-			read++;
-		}
-	}
+	va_start(ap, fmt);
+	read = vsscanf(str, fmt, ap);
+	va_end(ap);
 
 	return read;
 }
 
 #define MAX_SIZE 64
 
-static int read_arg(int fd, va_list ap, char option) {
+static int vfscanf(int fd, const char * fmt, va_list ap) {
+	int read;
+	char buffer[MAX_SIZE];
+
+	if (fgets(fd, buffer, MAX_SIZE) == NULL) {
+		return -1;
+	}
+
+	read = vsscanf(buffer, fmt, ap);
+
+	return read;
+}
+
+#define SUPPORTED_SCANF_FORMATS "sdc"
+
+static int vsscanf(const char * buffer, const char * fmt, va_list ap) {
 	int read = 0;
-	char * arg;
+	char * format  = (char *)fmt;
+
+	while (*buffer && *fmt) {
+		while (isspace(*fmt))
+			fmt++;
+		while (isspace(*buffer))
+			buffer++;
+
+		if (*fmt == '%') {
+			char option = *(++fmt);
+			int len;
+
+			if (strchr(SUPPORTED_SCANF_FORMATS, option) == NULL) {
+				fprintf(STDERR, "Unsupported format '%%c'\n", option);
+				return read;
+			}
+
+			len = read_arg(buffer, ap, option, *(++fmt));
+			if (len <= 0) {
+				fprintf(STDERR, "Wrong format, expected '%%c'\n", option);
+				return read;
+			}
+			buffer += len;
+			read++;
+		}
+		else {
+			if (*buffer != *fmt) {
+				fprintf(STDERR, "Wrong format, expected character '%c'\n", *fmt);
+				return read;
+			}
+			else {
+				fmt++;
+				buffer++;
+			}
+		}
+	}
+
+	if (*fmt != 0) {
+		fprintf(STDERR, "Wrong format, expected '%s'\n", format);
+		return -1;
+	}
+
+	return read;
+}
+
+static int read_arg(const char * buffer, va_list ap, char option, char nextchar) {
+	int read = 0;
+	char * ch;
 
 	switch (option) {
 		case 's':
-			read = read_str(fd, va_arg(ap, char *));
+			read = read_str(buffer, va_arg(ap, char *), nextchar);
 			break;
 		case 'd':
-			read = read_dec(fd, va_arg(ap, int *));
+			read = read_dec(buffer, va_arg(ap, int *));
 			break;
 		case 'c':
 			read = 1;
-			arg = va_arg(ap, char *);
-			(*arg) = fgetc(fd);
-			fputc(STDOUT, *arg);
+			ch = va_arg(ap, char *);
+			*ch = *buffer;
 			break;
 		default:
 			break;
@@ -284,38 +368,43 @@ static int read_arg(int fd, va_list ap, char option) {
 	return read;
 }
 
-// si hay mas de un espacio se rompe todo
-static int read_str(int fd, char * ptr) {
-	char c;
+static int read_str(const char * buffer, char * ptr, char nextchar) {
 	int read = 0;
+	char c;
 
-	while ((c = fgetc(fd)) != EOF && c != '\n' && c != ' ') {
-		if (c > 0) {
-			ptr[read++] = c;
-		}
-	}
+ 	while (!isspace((c = buffer[read])) && c != 0 && c != EOF && c != nextchar) {
+ 		ptr[read++] = c;
+ 	}
 
-	if (read == 0 && c == EOF) {
-		return 0;
-	}
-
-	ptr[read] = 0;
-	return 1;
+ 	ptr[read] = 0;
+ 	return read;
 }
 
-static int read_dec(int fd, int * ptr) {
+#define between(x, y, z) ((x) >= (y) && (x) <= (z))
+
+static int read_dec(const char * buffer, int * ptr) {
 	int number = 0;
 	int digits = 0;
+	int negative = 0;
 	char c;
 
-	while (digits < 9 && (c = fgetc(fd)) != '\n' && c != EOF && c != ' ') {
-		if (c < '0' || c > '9') {
-			return 0;
+	if (*buffer == '-') {
+		negative = 1;
+		buffer++;
+	}
+
+ 	while (!isspace((c = buffer[digits])) && c != 0 && c != EOF) {
+		if (c < '0' || c > '9' || !between(number, 0, INT_MAX - 1)) {
+			break;
 		}
 		number = number * 10 + c - '0';
 		digits++;
 	}
 
+	if (negative) {
+		number *= -1;
+	}
+
 	*ptr = number;
-	return digits>0;
+	return digits + negative;
 }

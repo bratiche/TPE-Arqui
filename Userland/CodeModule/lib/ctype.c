@@ -1,5 +1,7 @@
 #include <ctype.h>
 
+/* Reference: http://www.cplusplus.com/reference/cctype */
+
 int isalnum(int c) {
 	return isalpha(c) || isdigit(c);
 }
@@ -17,11 +19,11 @@ int islower(int c) {
 }
 
 int isprint(int c) {
-	return c;
+	return !iscntrl(c);
 }
 
 int isspace(int c) {
-	return c == ' ' || c == '\t';
+	return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
 }
 
 int isupper(int c) {
@@ -46,15 +48,18 @@ int toupper(int c) {
 	return c - ('a' - 'A');
 }
 
-//GG
 int iscntrl(int c) {
-	return 0;
+	return (c >= NULL && c <= US) || c == DEL;
 }
 
 int isgraph(int c) {
-	return 0;
+	return isprint(c) && c != ' ';
 }
 
 int ispunct(int c) {
-	return 0;
+	return isgraph(c) && !isalnum(c);
+}
+
+int isblank(int c) {
+	return c == ' ' || c == '\t';
 }

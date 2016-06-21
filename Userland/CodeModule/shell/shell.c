@@ -38,6 +38,7 @@ void init_shell() {
 }
 
 void update_shell() {
+
 	char key = getchar();
 
 	if (key <= 0) return;
@@ -73,10 +74,11 @@ void update_shell() {
 }
 
 void _get_username(void) {
-	int i = 0;
+	int i;
 	char c;
 
 	do {
+		i = 0;
 		clean_buffer();
 		printf("Please enter your username (up to %d characters): ", MAX_USERNAME_SIZE);
 		while ((c = getchar()) != '\n') {
@@ -91,15 +93,15 @@ void _get_username(void) {
 				buffer[i++] = c;
 			}
 		}
-		if (i > MAX_USERNAME_SIZE) {
-			i = 0;
-			fprintf(STDERR, "\nToo long...\n");
+		if (i == 0) {
+			putchar('\n');
 		}
-		else if (i > 0) {
-			strcpy(buffer, username);
+		else if (i > MAX_USERNAME_SIZE) {
+			fprintf(STDERR, "\nToo long...\n");
 		}
 	} while (i <= 0 || i > MAX_USERNAME_SIZE);
 
+	strcpy(buffer, username);
 }
 
 void init_commands(void) {

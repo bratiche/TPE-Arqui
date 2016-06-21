@@ -71,7 +71,11 @@ int strncpy(const char * from, char * to, int n) {
 char * strchr(const char * str, char c) {
 	char * ret = (char *)str;
 
-	while (*ret != NULL && *ret != c) ret++;
+	while (*ret != 0 && *ret != c) ret++;
+
+	if (*ret == 0) {
+		return NULL;
+	}
 
 	return ret;
 }

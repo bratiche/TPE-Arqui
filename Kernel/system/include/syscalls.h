@@ -8,10 +8,10 @@
 #define STDERR 2
 #define STDDATA 3
 
-#define SYSCALLS_SIZE 14
+#define SYSCALLS_SIZE 12
 
 enum {
-	SYS_EXIT = 1,
+	SYS_EXIT,
 	SYS_CLEAR,
 	SYS_READ,
 	SYS_WRITE,

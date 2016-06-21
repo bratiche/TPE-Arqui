@@ -26,11 +26,11 @@ static uint64_t read_stddata(char * buffer, int len);
 static SYSCALL syscalls[SYSCALLS_SIZE];		// array de punteros a funcion para las syscalls
 
 /* Called when instruction int 80 is executed */
-void syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx) {
-	if (rdi < 1 || rdi >= SYSCALLS_SIZE) {
-		return;
+uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx) {
+	if (rdi < SYS_EXIT || rdi > SYS_WAIT) {
+		return 0;
 	}
-	syscalls[rdi](rsi, rdx, rcx);
+	return syscalls[rdi](rsi, rdx, rcx);
 }
 
 /* Initializes software interrupts (syscalls) */
@@ -105,23 +105,19 @@ uint64_t sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
 	}
 }
 
+extern void _sti(void);
+
 uint64_t read_stdin(char * buffer, int len) {
 	int i = 0;
 	unsigned char c;
 
-	//TODO
-	/* Esto se cuelga en la shell cuando se tipea un caracter no aceptado como primer caracter de comando('\b' o ' ')*/
-	/* Pero, pero hace que funcione scanf (porque queda esperando hasta llenar el buffer)*/
-	// do {
-	// 	c = get_key();
-	// 	if (c != EMPTY) {
-	// 		buffer[i++] = c;
-	// 	}
-	// } while (i < len && buffer[i] != 0);
+	_sti();
 
 	while (i < len) {
 		c = get_key();
-		buffer[i++] = c;
+		if (c != EMPTY) {
+			buffer[i++] = c;
+		}
 	}
 
 	return i;
