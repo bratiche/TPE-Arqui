@@ -2,7 +2,7 @@
 #define COMMAND_H_
 
 #define MAX_ARGS 10
-#define COMMANDS_SIZE 10
+#define COMMANDS_SIZE 12
 
 typedef enum {
 	ECHO,
@@ -14,7 +14,10 @@ typedef enum {
 	DATE,
 	SET_TIME,
 	SET_DATE,
-	SLEEP, 
+	SLEEP,
+	TESTS, 
+	
+	PRINTF,			// version limitada de la funcion printf
 } command_id;
 
 typedef int (*command_fn)(int, char **);
@@ -36,5 +39,7 @@ int _date(int argc, char ** argv);
 int _set_time(int argc, char ** argv);
 int _set_date(int argc, char ** argv);
 int sleep(int argc, char ** argv);
+int _printf(int argc, char ** argv);
+int tests(int argc, char ** argv);
 
 #endif

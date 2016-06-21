@@ -104,7 +104,7 @@ void _get_username(void) {
 }
 
 void init_commands(void) {
-	add_command(ECHO, "echo", "echo [args]", echo);
+	add_command(ECHO, "echo", "echo [args...]", echo);
 	add_command(HELP, "help", "help [command]?", help);
 	add_command(FRACTAL, "fractal", "fractal [number]", fractal);
 	add_command(CLEAR, "clear", "clear", _clear);
@@ -114,6 +114,8 @@ void init_commands(void) {
 	add_command(SET_TIME, "settime", "settime [hour] [minutes] [seconds]", _set_time);
 	add_command(SET_DATE, "setdate", "setdate [day] [month] [year]", _set_date);
 	add_command(SLEEP, "sleep", "sleep [seconds]", sleep);
+	add_command(TESTS, "tests", "tests", tests);
+	add_command(PRINTF, "printf", "printf [format] [args...]", _printf);
 }
 
 void add_command(command_id id, const char * name, const char * desc, command_fn fn) {
@@ -164,6 +166,9 @@ int parse_args(char ** argv, char * str) {
 		ignore_characters(str);
 		*str++ = 0;
 		argv[i++] = arg;
+		if (i == MAX_ARGS) {
+			return i;
+		}
 		ignore_spaces(str);
 	}
 

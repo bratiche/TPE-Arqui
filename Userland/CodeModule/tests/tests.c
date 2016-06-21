@@ -6,12 +6,10 @@
 static void run_test(void (*test)(void));
 
 void run_tests() {
-	puts("*******************************\n");
 	run_test(printf_test);
 	run_test(scanf_test);
 	run_test(fgets_test);
 	run_test(malloc_test);
-	puts("*******************************\n");
 	puts("Type enter to continue...");
 	CLEAN_BUFFER;
 	clear();
@@ -20,7 +18,9 @@ void run_tests() {
 static void run_test(void (*test)(void)) {
 	puts("\nType enter to start the next test...\n");
 	CLEAN_BUFFER;
+	puts("*******************************\n");
 	test();
+	puts("*******************************\n");
 }
 
 void printf_test() {

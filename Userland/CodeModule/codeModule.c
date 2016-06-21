@@ -1,13 +1,6 @@
 #include <shell.h>
-#include <tests.h>
-
-static int test = 0;
 
 int main() {
-
-	if (test) {
-		run_tests();
-	}
 
 	init_shell();
 

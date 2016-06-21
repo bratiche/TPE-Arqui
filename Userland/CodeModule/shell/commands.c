@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <shell.h>
 #include <fractals.h>
+#include <tests.h>
 
 static char * user = "USER";
 
@@ -81,13 +82,19 @@ int help(int argc, char ** argv) {
 				printf("\tPrints the date in the console.\n");
 				break;
 			case SET_TIME:
-				printf("\tSets the time with the given parameters\n");
+				printf("\tSets the time with the given parameters.\n");
 				break;
 			case SET_DATE:
-				printf("\tSets the date with the given parameters\n");
+				printf("\tSets the date with the given parameters.\n");
 				break;
 			case SLEEP:
 				printf("\tSleeps for the given seconds.\n");
+				break;
+			case TESTS:
+				printf("\tRuns a series of tests to show the functionality of the standar library.\n");
+				break;
+			case PRINTF:
+				printf("\tWrites formatted output to the console.\n");
 				break;
 		}
 
@@ -267,4 +274,103 @@ int sleep(int argc, char ** argv) {
 
 	fprintf(STDERR, "Invalid argument!\n");
 	return -1;
+}
+
+int tests(int argc, char ** argv) {
+	if (argc != 0) {
+		fprintf(STDERR, "Invalid number of arguments!\n");
+		return -1;
+	}
+
+	run_tests();
+	return 0;
+}
+
+/* Las siguientes funciones corresponden a una implementacion de printf por comando (PARECIERA funcionar, puede tener bugs) */
+
+static void merge(char * str) {
+	char c1, c2;
+	char * aux = str + 1;
+	c1 = *str;
+	c2 = *(str + 1);
+
+	if (c1 == '\\') {
+		if (c2 == 'n') {
+			*str = '\n';
+		}
+		else if (c2 == 't') {
+			*str = '\t';
+		}
+	}
+
+	while (*(aux + 1)) {
+		*aux = *(aux + 1);
+		aux++;
+	}
+
+	*aux = 0;
+}
+
+static char * check_special_characters(char * fmt) {
+	char c;
+	char * ret = fmt;
+	while ((c = *fmt) != 0) {
+		if (c == '\\'){
+			merge(fmt);
+		}
+		fmt++;
+	}
+	return ret;
+}
+
+int _printf(int argc, char ** argv) {
+	if (argc == 0) {
+		return 0;
+	}
+	if (argc == 1) {
+		puts(check_special_characters(argv[0]));
+		return 1;
+	}
+
+	char * fmt = argv[0];
+	char option;
+	int i = 1;
+	int number;
+
+	while ((*fmt) != 0) {
+		switch (*fmt) {
+			case '%':
+				if (i >= argc) {
+					fprintf(STDERR, "Invalid arguments\n");
+					return -1;
+				}
+				option  = *(++fmt);
+				if (option == 's') {
+					puts(argv[i]);
+
+				} else if (option == 'd'){
+					if (sscanf(argv[i], "%d", &number) == 1) {
+						printf("%d", number);
+					}
+					else {
+						fprintf(STDERR, "%s: invalid number\n", argv[i]);
+						return -1;
+					}
+				} else if (option == 'c') {
+					putchar(argv[i][0]);
+				} else {
+					fprintf(STDERR, "Unsupported format: '%%c'", option);
+					return -1;
+				}
+				i++;
+				break;
+			default:
+				fmt = check_special_characters(fmt);
+				putchar(*fmt);
+				break;
+		}
+		fmt++;
+	}
+
+	return 1;
 }

@@ -65,7 +65,7 @@ uint64_t sys_clear(uint64_t arg1, uint64_t arg2, uint64_t arg3) {
 	return 0;
 }
 
-/* Writes to the given file descriptor and returns how many bytes where written */
+/* Writes to the given file descriptor and returns how many bytes were written */
 uint64_t sys_write(uint64_t fd, uint64_t buf, uint64_t size) {
 	char * buffer = (char *)buf;
 	int len = size;
@@ -91,7 +91,7 @@ uint64_t sys_write(uint64_t fd, uint64_t buf, uint64_t size) {
 }
 
 
-/* Reads from the given file descriptor and returns how many bytes where read */
+/* Reads from the given file descriptor and returns how many bytes were read */
 uint64_t sys_read(uint64_t fd, uint64_t buf, uint64_t size) {
 	char * buffer = (char *)buf;
 
