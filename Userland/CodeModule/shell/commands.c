@@ -149,11 +149,19 @@ int fractal(int argc, char ** argv) {
 }
 
 int _clear(int argc, char ** argv) {
+	if (argc != 0) {
+		fputs(STDERR, "Too many arguments!\n");
+		return -1;
+	}
 	clear();
 	return 0;
 }
 
 int _exit(int argc, char ** argv) {
+	if (argc != 0) {
+		fputs(STDERR, "Too many arguments!\n");
+		return -1;
+	}
 	return exit(0);
 }
 
@@ -176,52 +184,87 @@ int _date(int argc, char ** argv) {
 	return 0;
 }
 
-//TODO use sscanf instead of atoi to validate the parameters
 int _set_time(int argc, char ** argv) {
 	if (argc != 3) {
-		fprintf(STDERR, "Invalid arguments!\n");
+		fprintf(STDERR, "Invalid number of arguments!\n");
 		return -1;
 	}
 
 	int hour, minutes, seconds;
 	
-	// sscanf(argv[0], "%d", &hour);
-	// sscanf(argv[1], "%d", &minutes);
-	// sscanf(argv[2], "%d", &seconds);
-	hour = atoi(argv[0]);
-	minutes = atoi(argv[1]);
-	seconds = atoi(argv[2]);
+	if (sscanf(argv[0], "%d", &hour) == 1) {
+		if (sscanf(argv[1], "%d", &minutes) == 1) {
+			if (sscanf(argv[2], "%d", &seconds) == 1) {
+				if (seconds < 0 || seconds >= 60) {
+					fprintf(STDERR, "Invalid seconds!\n");
+					return -1;
+				}
+				if (minutes < 0 || minutes >= 60) {
+					fprintf(STDERR, "Invalid minutes!\n");
+					return -1;	
+				}
+				if (hour < 0 || hour >= 24) {
+					fprintf(STDERR, "Invalid hour!\n");
+					return -1;
+				}
+				return set_time(hour, minutes, seconds);
+			}
+		}
+	}
 
-	return set_time(hour, minutes, seconds);
+	fprintf(STDERR, "Invalid arguments!\n");
+	return -1;
 }
 
 int _set_date(int argc, char ** argv) {
 	if (argc != 3) {
-		fprintf(STDERR, "Too few arguments!\n");
+		fprintf(STDERR, "Invalid number of arguments!\n");
 		return -1;
 	}
+
 	int day, month, year;
 
-	// sscanf(argv[0], "%d", &day);
-	// sscanf(argv[1], "%d", &month);
-	// sscanf(argv[2], "%d", &year);
-	day = atoi(argv[0]);
-	month = atoi(argv[1]);
-	year = atoi(argv[2]);
+	if (sscanf(argv[0], "%d", &day) == 1) {
+		if (sscanf(argv[1], "%d", &month) == 1) {
+			if (sscanf(argv[2], "%d", &year) == 1) {
+				if (day <= 0 || day > 31) {
+					fprintf(STDERR, "Invalid day!\n");
+					return -1;
+				}
+				if (month <= 0 || month > 12) {
+					fprintf(STDERR, "Invalid month!\n");
+					return -1;
+				}
+				if (year < 0 || year >= 80) {
+					fprintf(STDERR, "Invalid year (must be between 0 and 79)\n");
+					return -1;
+				}
+				return set_date(day, month, year);
+			}
+		}
+	}
 
-	return set_date(day, month, year);
+	fprintf(STDERR, "Invalid arguments!\n");
+	return -1;
 }
 
 int sleep(int argc, char ** argv) {
 	if (argc != 1) {
-		fprintf(STDERR, "Invalid arguments!\n");
+		fprintf(STDERR, "Invalid number of arguments!\n");
 		return -1;
 	}
 
-	unsigned int seconds;
+	int seconds;
 
-	// sscanf(argv[0], "%d", &seconds);
-	seconds = atoi(argv[0]);
+	if (sscanf(argv[0], "%d", &seconds) == 1) {
+		if (seconds < 0) {
+			fprintf(STDERR, "Invalid seconds!\n");
+			return -1;	
+		}
+		printf("%d\n", seconds);
+		return wait(seconds * 1000);
+	}
 
-	return wait(seconds * 1000);
+	fprintf(STDERR, "Invalid argument!\n");
+	return -1;
 }

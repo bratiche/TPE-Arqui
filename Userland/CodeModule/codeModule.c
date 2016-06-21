@@ -1,7 +1,7 @@
 #include <shell.h>
 #include <tests.h>
 
-static int test = 1;
+static int test = 0;
 
 int main() {
 

@@ -337,7 +337,7 @@ static int vsscanf(const char * buffer, const char * fmt, va_list ap) {
 		}
 	}
 
-	if (*fmt != 0) {
+	if (*fmt != 0 || *buffer != 0) {
 		fprintf(STDERR, "Wrong format, expected '%s'\n", format);
 		return -1;
 	}
