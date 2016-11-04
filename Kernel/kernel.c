@@ -82,6 +82,8 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+extern void network_handler();
+
 int main()
 {	
 	clear_screen();
@@ -90,7 +92,9 @@ int main()
 	
 	puts_at("Arqui OS", GREEN, 0, 0);
 
-	((EntryPoint)codeModuleAddress)();
+	network_handler();
+
+	//((EntryPoint)codeModuleAddress)();
 
 	return 0;
 }
