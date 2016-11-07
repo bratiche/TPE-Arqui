@@ -1,5 +1,5 @@
 #include <io.h>
-#include <types.h>
+#include <stdint.h>
 #include <naiveConsole.h>
 
 extern uint64_t pci_read_reg();
@@ -8,7 +8,7 @@ extern uint64_t pci_read_reg();
 
 static uint64_t ioaddr;
 
-void turn_on(){
+/*void turn_on(){
 
 	write_port_word( ioaddr + 0x52, 0x0);
 
@@ -50,4 +50,4 @@ void configure_receive_buffer(){
 
 void enable_receiver_transmiter(){
 	write_port_word(ioaddr + 0x37, 0x0C);
-}
+}*/

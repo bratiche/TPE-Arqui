@@ -84,6 +84,8 @@ void * initializeKernelBinary()
 
 extern void network_handler();
 
+extern void checkAllBuses();
+
 int main()
 {	
 	clear_screen();
@@ -92,7 +94,8 @@ int main()
 	
 	puts_at("Arqui OS", GREEN, 0, 0);
 
-	network_handler();
+	checkAllBuses();
+	//network_handler();
 
 	//((EntryPoint)codeModuleAddress)();
 

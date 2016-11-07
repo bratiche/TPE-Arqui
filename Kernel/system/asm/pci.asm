@@ -23,11 +23,6 @@ pci_read_reg:
 	push rcx
 	push rbx
 
-	mov bl,2      ; Bus number
-	mov cl,0x8139 ; Device number
-	mov dl,2	  ; Register number
-
-
 	shl ebx, 16			; Move Bus to bits 23 - 16
 	shl ecx, 8			; Move Device/Function to bits 15 - 8
 	mov bx, cx

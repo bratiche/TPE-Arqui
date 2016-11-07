@@ -54,3 +54,28 @@ write_port_word:
 	mov rsp, rbp
 	pop rbp
 	ret
+
+;read_port_dword(port)
+read_port_dword:
+	push rbp
+	mov rbp, rsp
+	
+	mov rdx, rdi
+	in eax, dx	
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
+;write_port_dword(port, data)
+write_port_dword:
+	push rbp
+	mov rbp, rsp
+
+	mov rdx, rdi    
+	mov rax, rsi
+	out dx, eax
+
+	mov rsp, rbp
+	pop rbp
+	ret
