@@ -94,7 +94,7 @@ int main()
 	puts_at("Arqui OS", GREEN, 0, 0);
 
 	checkAllBuses();
-	//network_init();
+	network_init();
 
 	//((EntryPoint)codeModuleAddress)();
 
