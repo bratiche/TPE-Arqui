@@ -4,6 +4,7 @@
 #include <video.h>
 #include <stdint.h>
 #include <interrupts.h>
+#include <network.h>
 
 static void set_idt_entry (int index, uint8_t selector, uint64_t offset, uint8_t access);
 
@@ -13,6 +14,7 @@ extern void _irq02Handler(void);
 extern void _irq03Handler(void);
 extern void _irq04Handler(void);
 extern void _irq05Handler(void);
+extern void _irq06Handler(void);
 extern void _irq80Handler(void);
 
 extern void _sti();
@@ -29,7 +31,8 @@ static void init_idt() {
 
     set_idt_entry(0x20, 0x08, (uint64_t)&_irq00Handler, 0x8E);
     set_idt_entry(0x21, 0x08, (uint64_t)&_irq01Handler, 0x8E);    
-    set_idt_entry(0x80, 0x08, (uint64_t)&_irq80Handler, 0x8E);  
+    set_idt_entry(0x22, 0x08, (uint64_t)&_irq06Handler, 0x8E);  
+    set_idt_entry(0x80, 0x08, (uint64_t)&_irq80Handler, 0x8E);
 
     picMasterMask(0xFC); 
     picSlaveMask(0xFF);
@@ -57,6 +60,7 @@ void init_interrupts() {
 	/* Initialize ISRs */
 	routines[PIT_IRQ] = timer_handler;
 	routines[KB_IRQ] = keyboard_handler;
+    routines[NET_IRQ] = network_handler;
 
 	/**/
 	_sti();

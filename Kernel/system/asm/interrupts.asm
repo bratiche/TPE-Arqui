@@ -12,6 +12,7 @@ GLOBAL _irq02Handler
 GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
+GLOBAL _irq06Handler
 GLOBAL _irq80Handler
 
 EXTERN irqDispatcher
@@ -130,6 +131,10 @@ _irq04Handler:
 ;USB
 _irq05Handler:
 	irqHandlerMaster 5
+
+;Network
+_irq06Handler:
+	irqHandlerMaster 6
 
 _irq80Handler:
 	push rbp

@@ -6,6 +6,7 @@
 #include <video.h>
 #include <interrupts.h>
 #include <syscalls.h>
+#include <network.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -82,8 +83,6 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-extern void network_handler();
-
 extern void checkAllBuses();
 
 int main()
@@ -95,7 +94,7 @@ int main()
 	puts_at("Arqui OS", GREEN, 0, 0);
 
 	checkAllBuses();
-	//network_handler();
+	//network_init();
 
 	//((EntryPoint)codeModuleAddress)();
 

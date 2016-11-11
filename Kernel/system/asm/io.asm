@@ -2,6 +2,8 @@ GLOBAL read_port
 GLOBAL write_port
 GLOBAL read_port_word
 GLOBAL write_port_word
+GLOBAL read_port_dword
+GLOBAL write_port_dword
 
 section .text
 

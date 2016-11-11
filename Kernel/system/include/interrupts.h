@@ -6,6 +6,7 @@
 #define ISR_SIZE 8
 #define PIT_IRQ 0
 #define KB_IRQ 1
+#define NET_IRQ 2
 
 typedef void (*ISR)(void);		// (ISR = Interrupt Service Routine) puntero a funcion de manejo de interrupciones de hardware
 
