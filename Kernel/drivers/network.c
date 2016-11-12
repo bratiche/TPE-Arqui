@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <naiveConsole.h>
 
-#define ioaddr 0xC0010
+#define ioaddr 0xC000
 #define BUFFER 0x5F0000
 
 extern uint64_t pci_read_reg();
@@ -38,9 +38,24 @@ void enable_receiver_transmiter(){
 
 uint64_t get_mac_address() {
 
-	ncPrintHex(read_port_dword(ioaddr));
+	uint8_t mac_address_0 = read_port(ioaddr);	
+	uint8_t mac_address_1 = read_port(ioaddr + 1);
+	uint8_t mac_address_2 = read_port(ioaddr + 2);
+	uint8_t mac_address_3 = read_port(ioaddr + 3);
+	uint8_t mac_address_4 = read_port(ioaddr + 4);
+	uint8_t mac_address_5 = read_port(ioaddr + 5);
 
-
+	ncPrintHex(mac_address_0);
+	ncPrint(":");
+	ncPrintHex(mac_address_1);
+	ncPrint(":");
+	ncPrintHex(mac_address_2);
+	ncPrint(":");
+	ncPrintHex(mac_address_3);
+	ncPrint(":");
+	ncPrintHex(mac_address_4);
+	ncPrint(":");
+	ncPrintHex(mac_address_5);
 }
 
 void network_init(){
