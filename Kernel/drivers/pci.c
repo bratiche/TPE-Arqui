@@ -2,14 +2,14 @@
 #include <io.h>
 #include <stdint.h>
 
-#define PCI_COMMAND_BUS_MASTER 2
 #define RTL_VENDOR_ID 0x10EC
 #define RTL_DEVICE_ID 0x8139
 
 #define COMMAND_REGISTER 0x4
 
-uint32_t pci_read_reg(uint8_t bus, uint8_t device, uint8_t function);
-void pci_write_reg(uint8_t bus, uint8_t device, uint8_t function);
+#define CONFIG_ADDRESS 0xCF8
+#define CONFIG_DATA 0xCFC
+
 uint16_t pciConfigReadWord (uint8_t bus, uint8_t slot,uint8_t func, uint8_t offset);
 void pciConfigWriteWord (uint8_t bus, uint8_t slot,uint8_t func, uint8_t offset, uint16_t data);
 uint8_t pciConfigReadByte (uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
@@ -31,21 +31,21 @@ void checkDevice(uint8_t bus, uint8_t device, uint8_t function) {
 
 	if (vendor_id == RTL_VENDOR_ID && device_id==RTL_DEVICE_ID){
 
-		// ncPrint("  Interrupt Line: ");
-		// ncPrintBin(interrupt_line);
-  //       //ncPrintHex(interrupt_line); 	
-		// ncNewline();
-		// ncPrint("  Interrupt Pin: ");
-		// //ncPrintBin(interrupt_pin);
-  //       ncPrintHex(interrupt_pin);
-  //       ncNewline();
-		// ncPrint(" IO Address");
-		// ncPrintHex(io_address);
-		// ncPrintHex(io_address1);
+        enable_bus_master_bit(bus,device,function,COMMAND_REGISTER);
+
+		/*ncPrint("  Interrupt Line: ");
+		 ncPrintBin(interrupt_line);
+        //ncPrintHex(interrupt_line); 	
+		 ncNewline();
+		ncPrint("  Interrupt Pin: ");
+		//ncPrintBin(interrupt_pin);
+        ncPrintHex(interrupt_pin);
+        ncNewline();
+		ncPrint(" IO Address");
+		ncPrintHex(io_address);
+		ncPrintHex(io_address1);*/
 	}
-		
 	
-	enable_bus_master_bit(bus,device,function,COMMAND_REGISTER);
 }
 
 void checkAllBuses() {
@@ -53,7 +53,7 @@ void checkAllBuses() {
 
      for(i = 0; i < 256; i++) {
      	for(j = 0; j < 32; j++) {
-         	for (k=0 ; k < 8; k++){         		
+            for (k=0 ; k < 8; k++){         		
 	            checkDevice(i,j,k);	            
         	}
          }
@@ -62,14 +62,13 @@ void checkAllBuses() {
  }
 
 /* Enable bus master bit for RTL8139 */
-void enable_bus_master_bit (uint8_t bus, uint8_t slot,uint8_t func, uint8_t offset){	
+void enable_bus_master_bit (uint8_t bus, uint8_t slot,uint8_t func, uint8_t pci_register){	
 	    
-		uint16_t cmd;
+	uint16_t cmd;    
+ 	cmd = pciConfigReadWord(bus,slot,func,pci_register);        
+	cmd |= 0x4;    
 
-		cmd = pciConfigReadWord(bus,slot,func,offset);
-		cmd |= PCI_COMMAND_BUS_MASTER;
-
-		pciConfigWriteWord(bus,slot,func,offset,cmd);	
+	pciConfigWriteWord(bus,slot,func,pci_register,cmd);	
 }
 
 uint16_t pciConfigReadWord (uint8_t bus, uint8_t slot,
@@ -86,10 +85,10 @@ uint16_t pciConfigReadWord (uint8_t bus, uint8_t slot,
               (lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000));
  
     /* write out the address */
-    write_port_dword (0xCF8, address);
+    write_port_dword (CONFIG_ADDRESS, address);
     /* read in the data */
     /* (offset & 2) * 8) = 0 will choose the first word of the 32 bits register */
-    tmp = (uint16_t)((read_port_dword (0xCFC) >> ((offset & 2) * 8)) & 0xffff);
+    tmp = (uint16_t)((read_port_dword (CONFIG_DATA) >> ((offset & 2) * 8)) & 0xffff);
     return (tmp);
  }
 
@@ -108,10 +107,10 @@ uint16_t pciConfigReadWord (uint8_t bus, uint8_t slot,
               (lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000));
  
     /* write out the address */
-    write_port_dword (0xCF8, address);
+    write_port_dword (CONFIG_ADDRESS, address);
     /* read in the data */
     /* (offset & 2) * 8) = 0 will choose the first word of the 32 bits register */
-    tmp = read_port (0xCFC);
+    tmp = read_port (CONFIG_DATA);
     return (tmp);
  }
 
@@ -127,8 +126,8 @@ uint16_t pciConfigReadWord (uint8_t bus, uint8_t slot,
               (lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000));
  
     /* write out the address */
-    write_port_dword (0xCF8, address);
+    write_port_dword (CONFIG_ADDRESS, address);
     /* Write the data */    
-    write_port_dword(0xCFC, data);    
+    write_port_dword(CONFIG_DATA, data);    
     
  }

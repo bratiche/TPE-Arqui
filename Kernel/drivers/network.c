@@ -1,13 +1,27 @@
 #include <io.h>
 #include <stdint.h>
 #include <naiveConsole.h>
+#include <stdlib.h>
 
 #define ioaddr 0xC000
 #define BUFFER 0x5F0000
 
-extern uint64_t pci_read_reg();
+/* RTL-8139 Registers */
+#define TSD0 0x10
+#define TSAD0 0x20
+
+	uint8_t mac[6];
+
+	uint8_t rx_buf;
+	uint16_t rx_pos;
+
+	uint8_t *tx_buf[4];
+	uint8_t tx_pos;
+	uint8_t tx_buffers_free;
 
 /* Source: http://wiki.osdev.org/RTL8139 */
+
+void send_packet();
 
 void turn_on(){
 
@@ -36,7 +50,7 @@ void enable_receiver_transmiter(){
 	write_port(ioaddr + 0x37, 0x0C);
 }
 
-uint64_t get_mac_address() {
+void get_mac_address() {
 
 	uint8_t mac_address_0 = read_port(ioaddr);	
 	uint8_t mac_address_1 = read_port(ioaddr + 1);
@@ -45,17 +59,24 @@ uint64_t get_mac_address() {
 	uint8_t mac_address_4 = read_port(ioaddr + 4);
 	uint8_t mac_address_5 = read_port(ioaddr + 5);
 
-	ncPrintHex(mac_address_0);
+	mac[0]=mac_address_0;
+	mac[1]=mac_address_1;
+	mac[2]=mac_address_2;
+	mac[3]=mac_address_3;
+	mac[4]=mac_address_4;
+	mac[5]=mac_address_5;
+
+	ncPrintHex(mac[0]);
 	ncPrint(":");
-	ncPrintHex(mac_address_1);
+	ncPrintHex(mac[1]);
 	ncPrint(":");
-	ncPrintHex(mac_address_2);
+	ncPrintHex(mac[2]);
 	ncPrint(":");
-	ncPrintHex(mac_address_3);
+	ncPrintHex(mac[3]);
 	ncPrint(":");
-	ncPrintHex(mac_address_4);
+	ncPrintHex(mac[4]);
 	ncPrint(":");
-	ncPrintHex(mac_address_5);
+	ncPrintHex(mac[5]);
 }
 
 void network_init(){
@@ -68,8 +89,14 @@ void network_init(){
 	enable_receiver_transmiter();
 
 
-
+	tx_pos=0;
+	tx_buffers_free=4;
+	rx_pos=0;
 	get_mac_address();
+
+	while(1){
+		send_packet();
+	}
 
 }
 
@@ -77,7 +104,10 @@ int buffersize = 10;
 char * buffer = (char *)0x5F0000;
 
 void network_handler(){	
-	ncPrint("fafasfsa");
+
+	ncPrint("Network Interruption");
+
+	write_port_word(ioaddr + 0x3E, 0x1);
 
 	char * video = (char *)0xB8000;
 	int i;
@@ -88,4 +118,19 @@ void network_handler(){
 	}
 
 
+}
+
+void send_packet (){	
+
+	tx_buf[tx_pos]="packet";
+
+	int len = 6;
+
+	write_port_dword(ioaddr+ TSAD0 + (4*tx_pos), &tx_buf[tx_pos] );
+	// Clears the OWN bit and sets the length,
+	// sets the early transmit treshold to 8 bytes
+	write_port_dword(ioaddr+ TSD0 + (4*tx_pos), len & 0xFFF);
+
+	tx_pos = (tx_pos + 1) % 4;
+	tx_buffers_free--;		
 }
