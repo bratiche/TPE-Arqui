@@ -32,7 +32,7 @@ static void init_idt() {
     set_idt_entry(0x20, 0x08, (uint64_t)&_irq00Handler, 0x8E);
     set_idt_entry(0x21, 0x08, (uint64_t)&_irq01Handler, 0x8E);
 
-    set_idt_entry(0x22, 0x08, (uint64_t)&_irq11Handler, 0x8E); 
+    set_idt_entry(0x2B, 0x08, (uint64_t)&_irq11Handler, 0x8E); 
      
     set_idt_entry(0x80, 0x08, (uint64_t)&_irq80Handler, 0x8E);
 

@@ -1,6 +1,7 @@
 #include <io.h>
 #include <stdint.h>
 #include <naiveConsole.h>
+#include <video.h>
 #include <stdlib.h>
 
 #define ioaddr 0xC000
@@ -35,7 +36,7 @@ void clear_buffer(){
 
 void init_receive_buffer(){	
 
-	write_port_dword(ioaddr + 0x30, BUFFER); // send uint32_t memory location to RBSTART (0x30)}
+	write_port_dword(ioaddr + 0x30, (uint32_t) BUFFER); // send uint32_t memory location to RBSTART (0x30)}
 }
 
 void set_imr_isr(){
@@ -66,17 +67,19 @@ void get_mac_address() {
 	mac[4]=mac_address_4;
 	mac[5]=mac_address_5;
 
+	puts("Mac Address: ",DEFAULT);
 	ncPrintHex(mac[0]);
-	ncPrint(":");
+	puts(":",DEFAULT);
 	ncPrintHex(mac[1]);
-	ncPrint(":");
+	puts(":",DEFAULT);
 	ncPrintHex(mac[2]);
-	ncPrint(":");
+	puts(":",DEFAULT);
 	ncPrintHex(mac[3]);
-	ncPrint(":");
+	puts(":",DEFAULT);
 	ncPrintHex(mac[4]);
-	ncPrint(":");
+	puts(":",DEFAULT);
 	ncPrintHex(mac[5]);
+	puts("\n",DEFAULT);
 }
 
 void network_init(){
@@ -88,14 +91,13 @@ void network_init(){
 	configure_receive_buffer();
 	enable_receiver_transmiter();
 
-
 	tx_pos=0;
 	tx_buffers_free=4;
 	rx_pos=0;
-	get_mac_address();
+	get_mac_address();	
 
 	while(1){
-		send_packet();
+		send_packet();		
 	}
 
 }
@@ -107,6 +109,7 @@ void network_handler(){
 
 	ncPrint("Network Interruption");
 
+	/* Interrupt acknowledge */
 	write_port_word(ioaddr + 0x3E, 0x1);
 
 	char * video = (char *)0xB8000;
@@ -120,16 +123,14 @@ void network_handler(){
 
 }
 
-void send_packet (){	
+void send_packet (){			
 
-	tx_buf[tx_pos]="packet";
+	int len = 64;
 
-	int len = 6;
-
-	write_port_dword(ioaddr+ TSAD0 + (4*tx_pos), &tx_buf[tx_pos] );
+	write_port_dword(ioaddr + TSAD0 + (4*tx_pos), &tx_buf[tx_pos] );
 	// Clears the OWN bit and sets the length,
 	// sets the early transmit treshold to 8 bytes
-	write_port_dword(ioaddr+ TSD0 + (4*tx_pos), len & 0xFFF);
+	write_port_dword(ioaddr + TSD0 + (4*tx_pos), len & 0xFFF);
 
 	tx_pos = (tx_pos + 1) % 4;
 	tx_buffers_free--;		

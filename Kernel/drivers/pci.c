@@ -10,6 +10,8 @@
 #define CONFIG_ADDRESS 0xCF8
 #define CONFIG_DATA 0xCFC
 
+/* Source: http://wiki.osdev.org/PCI */
+
 uint16_t pciConfigReadWord (uint8_t bus, uint8_t slot,uint8_t func, uint8_t offset);
 void pciConfigWriteWord (uint8_t bus, uint8_t slot,uint8_t func, uint8_t offset, uint16_t data);
 uint8_t pciConfigReadByte (uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
