@@ -90,13 +90,14 @@ int main()
 	clear_screen();
 	init_syscalls();
 	init_interrupts();
+	checkAllBuses();
+	network_init();
 	
 	puts_at("Arqui OS", GREEN, 0, 0);
 
-	checkAllBuses();
-	network_init();
+	
 
-	//((EntryPoint)codeModuleAddress)();
+	((EntryPoint)codeModuleAddress)();
 
 	return 0;
 }

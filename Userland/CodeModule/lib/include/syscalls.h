@@ -27,6 +27,7 @@ enum {
 	SYS_SET_TIME,
 	SYS_SET_DATE,
 	SYS_WAIT,
+	SYS_SEND,
 };
 
 /* Termina la ejecucion del OS */
@@ -53,5 +54,7 @@ int set_time(unsigned int hour, unsigned int minutes, unsigned int seconds);
 int set_date(unsigned int day, unsigned int month, unsigned int year);
 /* Espera por una cantidad de milisegundos */
 int wait(unsigned long millis);
+ /* */
+int send(unsigned long dest, unsigned long msg, uint16_t length);
 
 #endif

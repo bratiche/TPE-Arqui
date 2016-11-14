@@ -2,7 +2,7 @@
 #define COMMAND_H_
 
 #define MAX_ARGS 10
-#define COMMANDS_SIZE 12
+#define COMMANDS_SIZE 13
 
 typedef enum {
 	ECHO,
@@ -18,6 +18,7 @@ typedef enum {
 	TESTS, 
 	
 	PRINTF,			// version limitada de la funcion printf
+	BROADCAST,
 } command_id;
 
 typedef int (*command_fn)(int, char **);
@@ -41,5 +42,6 @@ int _set_date(int argc, char ** argv);
 int sleep(int argc, char ** argv);
 int _printf(int argc, char ** argv);
 int tests(int argc, char ** argv);
+int broadcast(int argc, char ** argv);
 
 #endif

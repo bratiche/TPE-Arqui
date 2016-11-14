@@ -55,3 +55,7 @@ int set_date(unsigned int day, unsigned int month, unsigned int year) {
 int wait(unsigned long millis) {
 	return _syscall(SYS_WAIT, millis, 0, 0);
 }
+
+int send(unsigned long dest, unsigned long msg, uint16_t length){	
+	return _syscall(SYS_SEND,dest,(unsigned long)msg,length);
+}

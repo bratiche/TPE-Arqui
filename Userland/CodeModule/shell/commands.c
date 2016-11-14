@@ -96,6 +96,8 @@ int help(int argc, char ** argv) {
 			case PRINTF:
 				printf("\tWrites formatted output to the console.\n");
 				break;
+			case BROADCAST:
+				printf("\tSends a broadcast.\n");
 		}
 
 		return 0;
@@ -373,4 +375,16 @@ int _printf(int argc, char ** argv) {
 	}
 
 	return 1;
+}
+
+/*TODO: parse msg*/
+int broadcast(int argc, char ** argv){		
+	send("ffffffffffff","mensajemensajemensajemensajemensaje",strlen("mensajemensajemensajemensajemensaje"));
+	return 0;
+}
+
+/* not implemented */
+int chat(int argc, char ** argv){		
+	send(argv[0],"mensaje",strlen("mensaje"));
+	return 0;
 }

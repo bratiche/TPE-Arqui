@@ -29,8 +29,6 @@
 
 /* Source: http://wiki.osdev.org/RTL8139 */
 
-void send_packet();
-
 void turn_on(){
 
 	write_port(ioaddr + 0x52, 0x0);
@@ -103,17 +101,6 @@ void network_init(){
 	rx_pos=0;
 	get_mac_address();
 
-	memcpy(tx_buf0,"\xff\xff\xff\xff\xff\xff",6);
-	memcpy(tx_buf0+6,&mac[0],1);	
-	memcpy(tx_buf0+7,&mac[1],1);
-	memcpy(tx_buf0+8,&mac[2],1);
-	memcpy(tx_buf0+9,&mac[3],1);
-	memcpy(tx_buf0+10,&mac[4],1);
-	memcpy(tx_buf0+11,&mac[5],1);
-	memcpy(tx_buf0+12,"\x00\x00",2);
-	memcpy(tx_buf0+14,"PacketPacketPacketPacketPacketPacketPacketPacketPacketPacketPacket",66);		
-
-	send_packet();			
 }
 
 void network_handler(){	
@@ -126,11 +113,23 @@ void network_handler(){
 
 }
 
-void send_packet (){			
+void send_packet (uint64_t dest_mac, char * data, uint16_t size){
 
-	uint32_t status;
+	uint16_t len;
 
-	int len = 80;		
+	memcpy(tx_buf0,"\xff\xff\xff\xff\xff\xff",6);
+	memcpy(tx_buf0+6,&mac[0],1);	
+	memcpy(tx_buf0+7,&mac[1],1);
+	memcpy(tx_buf0+8,&mac[2],1);
+	memcpy(tx_buf0+9,&mac[3],1);
+	memcpy(tx_buf0+10,&mac[4],1);
+	memcpy(tx_buf0+11,&mac[5],1);
+	memcpy(tx_buf0+12,"\x00\x00",2);
+	memcpy(tx_buf0+14,data,size);	
+
+	len = 14 + size;
+
+	uint32_t status;	
 
 	write_port_dword(ioaddr + TSAD0 + (4*tx_pos), tx_buf0 );
 	

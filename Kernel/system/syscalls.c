@@ -4,6 +4,7 @@
 #include <bga.h>
 #include <timer.h>
 #include <rtc.h>
+#include <network.h>
 
 extern void haltcpu(void);
 
@@ -19,6 +20,7 @@ static uint64_t sys_date(uint64_t arg1, uint64_t arg2, uint64_t arg3);
 static uint64_t sys_set_time(uint64_t hour, uint64_t minutes, uint64_t seconds);
 static uint64_t sys_set_date(uint64_t day, uint64_t month, uint64_t year);
 static uint64_t sys_wait(uint64_t millis, uint64_t arg2, uint64_t arg3);
+static uint64_t sys_send(uint64_t dest, uint64_t msg, uint64_t arg3);
 
 static uint64_t read_stdin(char * buffer, int len);
 static uint64_t read_stddata(char * buffer, int len);
@@ -27,7 +29,7 @@ static SYSCALL syscalls[SYSCALLS_SIZE];		// array de punteros a funcion para las
 
 /* Called when instruction int 80 is executed */
 uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx) {
-	if (rdi < SYS_EXIT || rdi > SYS_WAIT) {
+	if (rdi < SYS_EXIT || rdi > SYS_SEND) {
 		return 0;
 	}
 	return syscalls[rdi](rsi, rdx, rcx);
@@ -48,6 +50,7 @@ void init_syscalls() {
 	syscalls[SYS_SET_TIME] = sys_set_time;
 	syscalls[SYS_SET_DATE] = sys_set_date;
 	syscalls[SYS_WAIT] = sys_wait;
+	syscalls[SYS_SEND] = sys_send;
 }
 
 /* Finishes the execution of the system */
@@ -214,5 +217,10 @@ uint64_t sys_set_date(uint64_t day, uint64_t month, uint64_t year) {
 /* Sleeps for the given milliseconds */
 uint64_t sys_wait(uint64_t millis, uint64_t arg2, uint64_t arg3) {
 	wait(millis);
+	return 0;
+}
+
+uint64_t sys_send(uint64_t dest, uint64_t msg, uint64_t length){	
+	send_packet(dest,msg,length);
 	return 0;
 }
