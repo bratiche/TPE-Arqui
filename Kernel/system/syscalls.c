@@ -221,6 +221,6 @@ uint64_t sys_wait(uint64_t millis, uint64_t arg2, uint64_t arg3) {
 }
 
 uint64_t sys_send(uint64_t dest, uint64_t msg, uint64_t length){	
-	send_packet(dest,msg,length);
+	send_packet((char*) dest,(char *)msg,length);
 	return 0;
 }

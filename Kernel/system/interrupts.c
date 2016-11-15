@@ -36,8 +36,8 @@ static void init_idt() {
      
     set_idt_entry(0x80, 0x08, (uint64_t)&_irq80Handler, 0x8E);
 
-    picMasterMask(0xFC); 
-    picSlaveMask(0xF7);
+    picMasterMask(0x0); 
+    picSlaveMask(0x0);
 }
 
 static void set_idt_entry (int index, uint8_t selector, uint64_t offset, uint8_t access) {

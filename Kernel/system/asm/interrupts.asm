@@ -64,6 +64,10 @@ EXTERN syscallDispatcher
 	mov al, 20h
 	out 20h, al
 
+	;signal pic slave EOI
+	mov al, 20h
+	out 0xA0, al
+
 	popState		
 	iretq
 %endmacro

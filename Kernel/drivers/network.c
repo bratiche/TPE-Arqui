@@ -16,6 +16,25 @@
 #define TSAD1 0x24
 #define TSAD2 0x28
 #define TSAD3 0x2C
+#define CAPR 0x38 /* Current adress of packet read*/
+
+
+#define ROK 1
+#define RX_READ_POINTER_MASK (~3)
+
+
+#define ISR 0x3E
+
+#define FLAG_ISR_SERR	0x8000	// System error
+#define FLAG_ISR_TIMEO	0x4000	// Timer timeout (See TIMERINT)
+#define FLAG_ISR_LENCHG	0x2000	// Cable length changed
+#define FLAG_ISR_FOVW	0x0040	// Rx FIFO Underflow
+#define FLAG_ISR_PUN	0x0020	// Packet Underrung
+#define FLAG_ISR_RXOVW	0x0010	// Rx Buffer Overflow
+#define FLAG_ISR_TER	0x0008	// Tx Error
+#define FLAG_ISR_TOK	0x0004	// Tx OK
+#define FLAG_ISR_RER	0x0002	// Rx Error
+#define FLAG_ISR_ROK	0x0001	// Rx OK
 
 	uint8_t mac[6];
 
@@ -23,7 +42,7 @@
 	uint16_t rx_pos;
 
 	uint8_t * tx_buf[4];
-	uint8_t * tx_buf0 = (unsigned char *)0x600000;
+	uint8_t * tx_buf0 = (unsigned char *)0x700000;
 	uint8_t tx_pos;
 	uint8_t tx_buffers_free;
 
@@ -99,25 +118,128 @@ void network_init(){
 	tx_pos=0;
 	tx_buffers_free=4;
 	rx_pos=0;
+
 	get_mac_address();
 
 }
 
 void network_handler(){	
 
-	ncPrint("Network Interruption");
+	//ncPrint("Network Interruption");
 
 	/* Interrupt acknowledge */
-	uint16_t status=read_port_word(ioaddr + 0x3E);
-	write_port_word(ioaddr + 0x3E, 0x1);
+	uint16_t status;//=read_port_word(ioaddr + 0x3E);
+	//write_port_word(ioaddr + 0x3E, status);
+
+	/*if(status & ROK)
+	{
+		while((read_port(ioaddr+0x37) & 0x1) == 0)
+		{
+			uint16_t rx_len=*(uint16_t*)(rx_buf + rx_pos + 2);
+			//kprintf("packet length: %d\n", rx_len);
+
+			// Handle the packet and send reply if needed
+			uint8_t *data=rx_buf + rx_pos + 4;	
+
+			puts(data,DEFAULT);
+
+			// Update CAPR. This is some higher level magic found from the manual
+			// +4 is the header, +3 is dword alignment
+			rx_pos=(rx_pos + rx_len + 4 + 3) & RX_READ_POINTER_MASK;
+			write_port_word(ioaddr + 0x38, rx_pos - 0x10);
+			rx_pos%=0x2000;
+		}
+	}
+*/	
+	int j=0;	
+	status = read_port_word(ioaddr + ISR);
+	if( !status )	return ;	
+		
+	// Transmit OK, a transmit descriptor is now free
+	if( status & FLAG_ISR_TOK )
+	{
+		for( j = 0; j < 4; j ++ )
+		{
+			if( read_port_dword(ioaddr + TSD0 + j*4) & 0x8000 ) {	// TSD TOK
+
+				
+			}
+		}
+
+		tx_buffers_free++;
+		puts("Transmit OK",DEFAULT);
+		puts("\n",DEFAULT);
+
+		write_port_word(ioaddr + ISR, FLAG_ISR_TOK);
+	}
+
+	// Transmit error, ... oops
+	if( status & FLAG_ISR_TER )
+	{
+		puts("RTK8139: Tx Error",DEFAULT);
+		write_port_word(ioaddr + ISR, FLAG_ISR_TER);
+	}
+	
+	// Recieve OK, inform read
+	if( status & FLAG_ISR_ROK )
+	{	
+
+		uint16_t rx_len=*(uint16_t*)(rx_buf + rx_pos + 2);
+
+		//uint32_t curr_add = read_port_dword(ioaddr+CAPR);
+
+		//rx_pos=curr_add+rx_pos+10;
+
+		//rx_pos=rx_pos+10;
+
+		uint8_t *data=rx_buf + rx_pos + 4;
+
+		handle_data(data);		
+
+		rx_pos=(rx_pos + rx_len + 4 + 3) & RX_READ_POINTER_MASK;
+		write_port_word(ioaddr + CAPR, rx_pos - 0x10);
+		rx_pos%=0x2000;
+
+		write_port_word(ioaddr + ISR, FLAG_ISR_ROK);
+	}	
+		
+	
+	// Recieve error
+	if( status & FLAG_ISR_RER )
+	{
+		puts("RTL8139: Rx Error",DEFAULT);
+		write_port_word(ioaddr + ISR, FLAG_ISR_RER);
+	}
+
+	// Packet Underrun/Link Change
+	if( status & FLAG_ISR_PUN )
+	{
+		// Set when CAPR is written but Rx is empty, OR when the link status changes
+		puts("RTL8139: ISR[PUN]",DEFAULT);
+		write_port_word(ioaddr + ISR, FLAG_ISR_PUN);
+	}
+
+	// Rx Overflow
+	if( status & FLAG_ISR_RXOVW )
+	{
+		puts("RTL8139 Rx Overflow",DEFAULT);
+		write_port_word(ioaddr + ISR, FLAG_ISR_RXOVW);
+	}
+
+	// Rx FIFO Overflow
+	if( status & FLAG_ISR_FOVW )
+	{
+		puts("RTL8139: Rx FIFO Overflow",DEFAULT);
+		write_port_word(ioaddr + ISR, FLAG_ISR_FOVW);
+	}
 
 }
 
-void send_packet (uint64_t dest_mac, char * data, uint16_t size){
+void send_packet (char * dest_mac, char * data, uint16_t size){
 
-	uint16_t len;
+	uint16_t len;	
 
-	memcpy(tx_buf0,"\xff\xff\xff\xff\xff\xff",6);
+	memcpy(tx_buf0,dest_mac,6);
 	memcpy(tx_buf0+6,&mac[0],1);	
 	memcpy(tx_buf0+7,&mac[1],1);
 	memcpy(tx_buf0+8,&mac[2],1);
@@ -144,6 +266,33 @@ void send_packet (uint64_t dest_mac, char * data, uint16_t size){
 
 	write_port_dword(ioaddr + TSD0 + (4*tx_pos), status);
 
-	//tx_pos = (tx_pos + 1) % 4;
-	//tx_buffers_free--;		
+	tx_pos = (tx_pos + 1) % 4;
+	tx_buffers_free--;		
+}
+
+void handle_data(uint8_t * data){
+
+	int index=6; /* dest mac */
+
+	puts("\n",DEFAULT);
+		puts("Mensaje de ",MAGENTA);
+		for(int i=0; i<6;i++){
+			ncPrintHex(data[index+i]);
+			if (i==5){
+				puts(" ",DEFAULT);
+			}
+			puts(":",DEFAULT);							
+		}
+
+		puts(" ",DEFAULT);
+
+		index=index+6; /* source mac */
+		index=index+2; /* garbage bytes  */
+
+		for(int i=0;i<80;i++){
+			putchar(data[index+i],GREEN);
+			if(data[i+index]=='\0'){
+				break;
+			}
+		}		
 }

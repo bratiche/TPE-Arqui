@@ -57,5 +57,5 @@ int wait(unsigned long millis) {
 }
 
 int send(unsigned long dest, unsigned long msg, uint16_t length){	
-	return _syscall(SYS_SEND,dest,(unsigned long)msg,length);
+	return _syscall(SYS_SEND,dest,msg,length);
 }

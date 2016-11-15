@@ -98,6 +98,8 @@ int help(int argc, char ** argv) {
 				break;
 			case BROADCAST:
 				printf("\tSends a broadcast.\n");
+			case CHAT:
+				printf("\tSends a message to the specified user.\n");
 		}
 
 		return 0;
@@ -378,13 +380,31 @@ int _printf(int argc, char ** argv) {
 }
 
 /*TODO: parse msg*/
-int broadcast(int argc, char ** argv){		
-	send("ffffffffffff","mensajemensajemensajemensajemensaje",strlen("mensajemensajemensajemensajemensaje"));
+int broadcast(int argc, char ** argv){
+
+	if (argc == 0 ){
+		fprintf(STDERR, "Invalid number of arguments!\n");
+		return -1;
+	}
+
+	char * msg =argv[0];
+
+	send("\xff\xff\xff\xff\xff\xff",msg,strlen(msg));
 	return 0;
 }
 
-/* not implemented */
-int chat(int argc, char ** argv){		
-	send(argv[0],"mensaje",strlen("mensaje"));
+/* TODO: parse mac and msg */
+int chat(int argc, char ** argv){	
+
+	if (argc <3){
+		fprintf(STDERR, "Invalid number of arguments!\n");
+		return -1;
+	}	
+
+	char * mac = "52:54:AB:CD:EF:12";
+
+	char * msg =argv[1];
+
+	send(mac,msg,strlen(msg));
 	return 0;
 }

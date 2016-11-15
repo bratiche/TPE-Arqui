@@ -116,7 +116,8 @@ void init_commands(void) {
 	add_command(SLEEP, "sleep", "sleep [seconds]", sleep);
 	add_command(TESTS, "tests", "tests", tests);
 	add_command(PRINTF, "printf", "printf [format] [args...]", _printf);
-	add_command(BROADCAST, "broadcast", "broadcast [text]", broadcast);
+	add_command(BROADCAST, "broadcast", "broadcast [msg]", broadcast);
+	add_command(CHAT, "chat", "chat [mac] [msg]", broadcast);
 }
 
 void add_command(command_id id, const char * name, const char * desc, command_fn fn) {
