@@ -396,12 +396,12 @@ int broadcast(int argc, char ** argv){
 /* TODO: parse mac and msg */
 int chat(int argc, char ** argv){	
 
-	if (argc <3){
+	if (argc <2){
 		fprintf(STDERR, "Invalid number of arguments!\n");
 		return -1;
 	}	
 
-	char * mac = "52:54:AB:CD:EF:12";
+	char * mac = "\x52\x54\xAB\xCD\xEF\x12";
 
 	char * msg =argv[1];
 

@@ -167,7 +167,7 @@ void network_handler(){
 		}
 
 		tx_buffers_free++;
-		puts("Transmit OK",DEFAULT);
+		puts("Message Sent.",DEFAULT);
 		puts("\n",DEFAULT);
 
 		write_port_word(ioaddr + ISR, FLAG_ISR_TOK);
@@ -176,7 +176,7 @@ void network_handler(){
 	// Transmit error, ... oops
 	if( status & FLAG_ISR_TER )
 	{
-		puts("RTK8139: Tx Error",DEFAULT);
+		puts("Message could not be sent.",DEFAULT);
 		write_port_word(ioaddr + ISR, FLAG_ISR_TER);
 	}
 	
@@ -207,7 +207,7 @@ void network_handler(){
 	// Recieve error
 	if( status & FLAG_ISR_RER )
 	{
-		puts("RTL8139: Rx Error",DEFAULT);
+		puts("Message reception error.",DEFAULT);
 		write_port_word(ioaddr + ISR, FLAG_ISR_RER);
 	}
 
@@ -289,7 +289,7 @@ void handle_data(uint8_t * data){
 		index=index+6; /* source mac */
 		index=index+2; /* garbage bytes  */
 
-		for(int i=0;i<80;i++){
+		for(int i=0;i<180;i++){
 			putchar(data[index+i],GREEN);
 			if(data[i+index]=='\0'){
 				break;
