@@ -379,32 +379,77 @@ int _printf(int argc, char ** argv) {
 	return 1;
 }
 
-/*TODO: parse msg*/
+char * parse_msg (int argc, char ** argv);
+
+
+/*TODO: espacios */
 int broadcast(int argc, char ** argv){
 
-	if (argc == 0 ){
+	if (argc == 0){
 		fprintf(STDERR, "Invalid number of arguments!\n");
 		return -1;
 	}
 
-	char * msg =argv[0];
+	char * msg;	
 
-	send("\xff\xff\xff\xff\xff\xff",msg,strlen(msg));
+	msg=parse_msg(argc,argv);	
+
+	send("\xff\xff\xff\xff\xff\xff", msg, strlen(msg));
 	return 0;
 }
 
-/* TODO: parse mac and msg */
-int chat(int argc, char ** argv){	
+//TODO AGREGAR F***ING ESPACIOS PLEASE
+char * parse_msg (int argc, char ** argv){
 
-	if (argc <2){
+	char * msg = argv[0];	
+
+	for (int i = 1; i < argc ; i++){
+		//msg=strcat(msg," ");
+		msg=strcat(msg,argv[i]);
+	}
+	
+	return msg;
+}
+
+
+#define valid_mac_symbol(c) ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
+
+
+/* TODO: parse mac and msg */
+/* checkear la mac de destino en network.c (driver)*/
+int chat(int argc, char ** argv){	
+ 
+	if (argc < 2){
 		fprintf(STDERR, "Invalid number of arguments!\n");
 		return -1;
 	}	
 
-	char * mac = "\x52\x54\xAB\xCD\xEF\x12";
+	char * mac = "\xAA\xBB\xCC\xDD\xEE\xFF";	
 
-	char * msg =argv[1];
+	char * arg = argv[0];
+	int position = 1;	
+ 
+	while(*arg != '\0') {
+		if(position != 0 && position % 3 == 0) {
+			if (*arg != ':') {
+				fprintf(STDERR, "Invalid mac address 1!\n");				
+				return -1;
+			}
+		}
+
+		else {
+			if (!valid_mac_symbol(*arg)) {
+				fprintf(STDERR, "Invalid mac address 2!\n");
+				return -1;
+			}
+		}
+		arg++;
+		position++;
+	}
+
+	char * msg = parse_msg(argc-1,argv+1);
 
 	send(mac,msg,strlen(msg));
+
 	return 0;
 }

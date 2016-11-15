@@ -15,7 +15,7 @@ void ncPrint(const char * string)
 
 	for (i = 0; string[i] != 0; i++)
 		ncPrintChar(string[i]);*/
-	puts(string,DEFAULT);
+	puts((char *)string, DEFAULT);
 }
 
 void ncPrintChar(char character)

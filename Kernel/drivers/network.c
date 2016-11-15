@@ -36,15 +36,15 @@
 #define FLAG_ISR_RER	0x0002	// Rx Error
 #define FLAG_ISR_ROK	0x0001	// Rx OK
 
-	uint8_t mac[6];
+uint8_t mac[6];
 
-	uint8_t *rx_buf;
-	uint16_t rx_pos;
+uint8_t *rx_buf;
+uint16_t rx_pos;
 
-	uint8_t * tx_buf[4];
-	uint8_t * tx_buf0 = (unsigned char *)0x700000;
-	uint8_t tx_pos;
-	uint8_t tx_buffers_free;
+uint8_t * tx_buf[4];
+uint8_t * tx_buf0 = (unsigned char *)0x700000;
+uint8_t tx_pos;
+uint8_t tx_buffers_free;
 
 /* Source: http://wiki.osdev.org/RTL8139 */
 
@@ -60,7 +60,7 @@ void clear_buffer(){
 
 void init_receive_buffer(){	
 	rx_buf = (unsigned char *) RECEIVE_BUFFER;
-	write_port_dword(ioaddr + 0x30, (uint32_t) rx_buf); // send uint32_t memory location to RBSTART (0x30)}
+	write_port_dword(ioaddr + 0x30, (uint64_t) rx_buf); // send uint32_t memory location to RBSTART (0x30)}
 }
 
 void set_imr_isr(){
@@ -75,7 +75,8 @@ void enable_receiver_transmiter(){
 	write_port(ioaddr + 0x37, 0x0C);
 }
 
-void get_mac_address() {
+// return the array containing the 6 bytes of a mac address
+uint8_t * get_mac_address() {
 
 	uint8_t mac_address_0 = read_port(ioaddr);	
 	uint8_t mac_address_1 = read_port(ioaddr + 1);
@@ -91,22 +92,10 @@ void get_mac_address() {
 	mac[4]=mac_address_4;
 	mac[5]=mac_address_5;
 
-	puts("Mac Address: ",DEFAULT);
-	ncPrintHex(mac[0]);
-	puts(":",DEFAULT);
-	ncPrintHex(mac[1]);
-	puts(":",DEFAULT);
-	ncPrintHex(mac[2]);
-	puts(":",DEFAULT);
-	ncPrintHex(mac[3]);
-	puts(":",DEFAULT);
-	ncPrintHex(mac[4]);
-	puts(":",DEFAULT);
-	ncPrintHex(mac[5]);
-	puts("\n",DEFAULT);
+	return mac;
 }
 
-void network_init(){
+uint8_t * network_init(){
 
 	turn_on();
 	clear_buffer();
@@ -119,8 +108,37 @@ void network_init(){
 	tx_buffers_free=4;
 	rx_pos=0;
 
-	get_mac_address();
+	return get_mac_address();
+}
 
+void handle_data(uint8_t * data){
+
+	int index=6; /* dest mac */
+
+
+	//IF 
+
+	puts("\n",DEFAULT);
+		puts("Mensaje de ",MAGENTA);
+		for(int i=0; i<6;i++){
+			ncPrintHex(data[index+i]);
+			if (i==5){
+				puts(" ",DEFAULT);
+			}
+			puts(":",DEFAULT);							
+		}
+
+		puts(" ",DEFAULT);
+
+		index=index+6; /* source mac */
+		index=index+2; /* garbage bytes  */
+
+		for(int i=0;i<180;i++){
+			putchar(data[index+i],GREEN);
+			if(data[i+index]=='\0'){
+				break;
+			}
+		}		
 }
 
 void network_handler(){	
@@ -253,7 +271,7 @@ void send_packet (char * dest_mac, char * data, uint16_t size){
 
 	uint32_t status;	
 
-	write_port_dword(ioaddr + TSAD0 + (4*tx_pos), tx_buf0 );
+	write_port_dword(ioaddr + TSAD0 + (4*tx_pos), (uint64_t)tx_buf0 );
 	
 	// Clears the OWN bit and sets the length,
 	// sets the early transmit treshold to 8 bytes
@@ -264,35 +282,9 @@ void send_packet (char * dest_mac, char * data, uint16_t size){
 	status |= (0 & 0x3F) << 16;	// 16-21: Early TX threshold (zero atm, TODO: check)
 
 
-	write_port_dword(ioaddr + TSD0 + (4*tx_pos), status);
+	write_port_dword(ioaddr + TSD0 + (4*tx_pos), (uint64_t)status);
 
 	tx_pos = (tx_pos + 1) % 4;
 	tx_buffers_free--;		
 }
 
-void handle_data(uint8_t * data){
-
-	int index=6; /* dest mac */
-
-	puts("\n",DEFAULT);
-		puts("Mensaje de ",MAGENTA);
-		for(int i=0; i<6;i++){
-			ncPrintHex(data[index+i]);
-			if (i==5){
-				puts(" ",DEFAULT);
-			}
-			puts(":",DEFAULT);							
-		}
-
-		puts(" ",DEFAULT);
-
-		index=index+6; /* source mac */
-		index=index+2; /* garbage bytes  */
-
-		for(int i=0;i<180;i++){
-			putchar(data[index+i],GREEN);
-			if(data[i+index]=='\0'){
-				break;
-			}
-		}		
-}

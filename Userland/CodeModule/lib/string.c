@@ -115,3 +115,26 @@ int prefix(const char * str1, const char * str2) {
 
 	return i;
 }
+
+char * strcat(char *dest_ptr, const char *src_ptr){
+    
+  	 
+  	   char* strret = dest_ptr;
+  	   if((NULL != dest_ptr) && (NULL != src_ptr))
+  	   {
+  	     /* Iterate till end of dest string */
+  	     while(NULL != *dest_ptr)
+  	     {
+  	       dest_ptr++;
+  	     }
+  	     /* Copy src string starting from the end NULL of dest */
+  	     while(NULL != *src_ptr)
+  	     {
+  	       *dest_ptr++ = *src_ptr++;
+  	     }
+  	     /* put NULL termination */
+  	     *dest_ptr = NULL;
+  	   }
+  	   return strret;
+  	 
+}

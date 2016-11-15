@@ -55,6 +55,6 @@ int set_date(unsigned int day, unsigned int month, unsigned int year);
 /* Espera por una cantidad de milisegundos */
 int wait(unsigned long millis);
  /* */
-int send(unsigned long dest, unsigned long msg, uint16_t length);
+int send(char * dest, char * msg, uint16_t length);
 
 #endif

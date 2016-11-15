@@ -91,9 +91,24 @@ int main()
 	init_syscalls();
 	init_interrupts();
 	checkAllBuses();
-	network_init();
+	uint8_t * mac = network_init();
+
 	
 	puts_at("Arqui OS", GREEN, 0, 0);
+
+	puts("Mac Address: ",DEFAULT);
+	ncPrintHex(mac[0]);
+	puts(":",DEFAULT);
+	ncPrintHex(mac[1]);
+	puts(":",DEFAULT);
+	ncPrintHex(mac[2]);
+	puts(":",DEFAULT);
+	ncPrintHex(mac[3]);
+	puts(":",DEFAULT);
+	ncPrintHex(mac[4]);
+	puts(":",DEFAULT);
+	ncPrintHex(mac[5]);
+	puts("\n",DEFAULT);
 
 	
 

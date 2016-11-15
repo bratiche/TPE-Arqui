@@ -15,4 +15,7 @@ char * strstr(const char * str1, const char * str2);
 /* Returns the length of str1 if str1 is prefix of str2, else returns 0 */
 int prefix(const char * str1, const char * str2);
 
+char * strcat(char *dest, const char *src);
+
+
 #endif

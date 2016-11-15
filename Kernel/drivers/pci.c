@@ -23,13 +23,13 @@ void checkDevice(uint8_t bus, uint8_t device, uint8_t function) {
 
 	uint16_t device_id = pciConfigReadWord(bus, device, function, 0x2);
 
-	uint16_t io_address = pciConfigReadWord(bus, device, function, 0x10);
+	// uint16_t io_address = pciConfigReadWord(bus, device, function, 0x10);
 
-	uint16_t io_address1 = pciConfigReadWord(bus, device, function, 0x12);
+	// uint16_t io_address1 = pciConfigReadWord(bus, device, function, 0x12);
 	
-	uint16_t interrupt_line = pciConfigReadWord(bus, device, function, 0x3c);
+	// uint16_t interrupt_line = pciConfigReadWord(bus, device, function, 0x3c);
 
-	uint8_t interrupt_pin = pciConfigReadByte(bus, device, function, 0x3d);
+	// uint8_t interrupt_pin = pciConfigReadByte(bus, device, function, 0x3d);
 
 	if (vendor_id == RTL_VENDOR_ID && device_id==RTL_DEVICE_ID){
 
