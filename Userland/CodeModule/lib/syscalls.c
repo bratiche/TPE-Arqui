@@ -59,3 +59,7 @@ int wait(unsigned long millis) {
 int send(char * dest, char * msg, uint16_t length){	
 	return _syscall(SYS_SEND, (unsigned long)dest, (unsigned long)msg, length);
 }
+
+int get_packet(uint8_t * src, uint8_t * dest, char * msg) {
+	return _syscall(SYS_GET_PACKET, (unsigned long)src, (unsigned long)dest, (unsigned long)msg);
+}

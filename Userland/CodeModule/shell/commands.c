@@ -399,13 +399,12 @@ int broadcast(int argc, char ** argv){
 }
 
 //TODO AGREGAR F***ING ESPACIOS PLEASE
-char * parse_msg (int argc, char ** argv){
+char * parse_msg (int argc, char ** argv){	
 
 	char * msg = argv[0];	
 
-	for (int i = 1; i < argc ; i++){
-		//msg=strcat(msg," ");
-		msg=strcat(msg,argv[i]);
+	for (int i = 1; i < argc ; i++){		
+		msg=strcat_space(msg,argv[i]);
 	}
 	
 	return msg;
@@ -417,9 +416,35 @@ char * parse_msg (int argc, char ** argv){
 
 /* TODO: parse mac and msg */
 /* checkear la mac de destino en network.c (driver)*/
-int chat(int argc, char ** argv){	
+// TODO read packet syscall
+int chat(int argc, char ** argv){
+
+	uint8_t src[6];
+	uint8_t dest[6];
+	char * msg = NULL;
+
+	if (argc == 0) {
+		while(get_packet(src, dest, msg) != -1) {
+		
+			printf("Mensaje de ");
+			for(int i = 0; i < 6; i++) {
+				printf("%x", src[i]);
+				if (i == 5){
+					printf(" ");
+				}
+				printf(":");							
+			}
+
+			printf(" ");
+
+			printf(msg);
+			printf("\n");
+		}
+
+		return 0;
+	}	
  
-	if (argc < 2){
+	if (argc < 2) {
 		fprintf(STDERR, "Invalid number of arguments!\n");
 		return -1;
 	}	
@@ -447,7 +472,7 @@ int chat(int argc, char ** argv){
 		position++;
 	}
 
-	char * msg = parse_msg(argc-1,argv+1);
+	msg = parse_msg(argc-1,argv+1);
 
 	send(mac,msg,strlen(msg));
 

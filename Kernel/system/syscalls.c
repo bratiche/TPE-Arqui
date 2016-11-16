@@ -6,7 +6,11 @@
 #include <rtc.h>
 #include <network.h>
 
+
 extern void haltcpu(void);
+
+extern void * memcpy(void * destination, const void * source, uint64_t length);
+
 
 static uint64_t sys_exit(uint64_t code, uint64_t arg2, uint64_t arg3);
 static uint64_t sys_clear(uint64_t arg1, uint64_t arg2, uint64_t arg3);
@@ -14,13 +18,13 @@ static uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t len);
 static uint64_t sys_write(uint64_t fd, uint64_t buffer, uint64_t len);
 static uint64_t sys_video(uint64_t width, uint64_t height, uint64_t bpp);
 static uint64_t sys_draw(uint64_t x, uint64_t y, uint64_t color);
-static uint64_t sys_sbrk(uint64_t increment, uint64_t arg2, uint64_t arg3);
 static uint64_t sys_time(uint64_t arg1, uint64_t arg2, uint64_t arg3);
 static uint64_t sys_date(uint64_t arg1, uint64_t arg2, uint64_t arg3);
 static uint64_t sys_set_time(uint64_t hour, uint64_t minutes, uint64_t seconds);
 static uint64_t sys_set_date(uint64_t day, uint64_t month, uint64_t year);
 static uint64_t sys_wait(uint64_t millis, uint64_t arg2, uint64_t arg3);
 static uint64_t sys_send(uint64_t dest, uint64_t msg, uint64_t arg3);
+static uint64_t sys_get_packet(uint64_t src, uint64_t dest, uint64_t msg);
 
 static uint64_t read_stdin(char * buffer, int len);
 static uint64_t read_stddata(char * buffer, int len);
@@ -29,7 +33,7 @@ static SYSCALL syscalls[SYSCALLS_SIZE];		// array de punteros a funcion para las
 
 /* Called when instruction int 80 is executed */
 uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx) {
-	if (rdi < SYS_EXIT || rdi > SYS_SEND) {
+	if (rdi < SYS_EXIT || rdi > SYS_GET_PACKET) {
 		return 0;
 	}
 	return syscalls[rdi](rsi, rdx, rcx);
@@ -51,6 +55,7 @@ void init_syscalls() {
 	syscalls[SYS_SET_DATE] = sys_set_date;
 	syscalls[SYS_WAIT] = sys_wait;
 	syscalls[SYS_SEND] = sys_send;
+	syscalls[SYS_GET_PACKET] = sys_get_packet;
 }
 
 /* Finishes the execution of the system */
@@ -222,5 +227,19 @@ uint64_t sys_wait(uint64_t millis, uint64_t arg2, uint64_t arg3) {
 
 uint64_t sys_send(uint64_t dest, uint64_t msg, uint64_t length){	
 	send_packet((char*) dest,(char *)msg,length);
+	return 0;
+}
+
+packet ret;
+
+uint64_t sys_get_packet(uint64_t src, uint64_t dest, uint64_t msg) {
+	uint8_t * src_mac = (uint8_t *)src;
+	uint8_t * dest_mac = (uint8_t *)dest;
+	char * buffer = (char *)msg;
+
+	if (get_next_packet(src_mac, dest_mac, buffer) == -1) {
+		return -1;
+	}
+	
 	return 0;
 }

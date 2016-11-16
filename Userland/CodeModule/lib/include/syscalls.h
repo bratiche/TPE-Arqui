@@ -7,6 +7,7 @@
 #define STDOUT	1
 #define STDERR	2
 #define STDDATA 3
+#define NETWORK 4
 
 typedef enum {
 	false = 0,
@@ -28,6 +29,7 @@ enum {
 	SYS_SET_DATE,
 	SYS_WAIT,
 	SYS_SEND,
+	SYS_GET_PACKET
 };
 
 /* Termina la ejecucion del OS */
@@ -56,5 +58,7 @@ int set_date(unsigned int day, unsigned int month, unsigned int year);
 int wait(unsigned long millis);
  /* */
 int send(char * dest, char * msg, uint16_t length);
+
+int get_packet(uint8_t * src, uint8_t * dest, char * msg);
 
 #endif

@@ -8,7 +8,7 @@
 #define STDERR 2
 #define STDDATA 3
 
-#define SYSCALLS_SIZE 13
+#define SYSCALLS_SIZE 14
 
 enum {
 	SYS_EXIT,
@@ -25,10 +25,13 @@ enum {
 	SYS_SET_DATE,
 	SYS_WAIT,
 	SYS_SEND,
+	SYS_GET_PACKET
 };
 
 typedef uint64_t (*SYSCALL)(uint64_t arg1, uint64_t arg2, uint64_t arg3);	// puntero a funcion de manejo de una syscall
 
 void init_syscalls(void);
+
+uint64_t sys_sbrk(uint64_t increment, uint64_t arg2, uint64_t arg3);
 
 #endif

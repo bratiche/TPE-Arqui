@@ -3,6 +3,9 @@
 #include <naiveConsole.h>
 #include <video.h>
 #include <lib.h>
+#include <network.h>
+#include <syscalls.h>
+
 
 #define ioaddr 0xC000
 #define RECEIVE_BUFFER 0x5F0000
@@ -111,34 +114,78 @@ uint8_t * network_init(){
 	return get_mac_address();
 }
 
+void print_mac_address(uint8_t mac[6]) {
+	for(int i = 0; i < 6; i++) {
+		ncPrintHex(mac[i]);	
+		if (i == 5){
+			ncPrint(" ");
+		}
+		ncPrint(":");							
+	}
+}
+
+// TODO test buffer
+#define BUFFER_SIZE 128
+
+packet buffer[BUFFER_SIZE];
+uint8_t curr_pos = 0;
+
 void handle_data(uint8_t * data){
 
-	int index=6; /* dest mac */
+	memcpy(buffer[curr_pos].dest_mac, data, 6);  
+	memcpy(buffer[curr_pos].src_mac, data + 6, 6);
+
+	buffer[curr_pos].msg = (char *)malloc(data[13] + 1);
+	memcpy(buffer[curr_pos].msg, data + 14, data[13] + 1);
+
+	curr_pos++;
+
+	if (curr_pos >= BUFFER_SIZE) {
+		curr_pos = 0;
+	}
+
+	//print buffer
+
+	// for(int i = 0; i < curr_pos; i++) {
+	// 	print_mac_address(buffer[i].src_mac);
+	// 	ncPrint("\n");
+	// 	print_mac_address(buffer[i].dest_mac);
+	// 	ncPrint("\n");
+	// 	ncPrint(buffer[i].msg);
+	// 	ncPrint("\n");
+	// }
+}
 
 
-	//IF 
+int last_read_pos = 0;
 
-	puts("\n",DEFAULT);
-		puts("Mensaje de ",MAGENTA);
-		for(int i=0; i<6;i++){
-			ncPrintHex(data[index+i]);
-			if (i==5){
-				puts(" ",DEFAULT);
-			}
-			puts(":",DEFAULT);							
-		}
+int get_next_packet(uint8_t * src_mac, uint8_t * dest_mac, char * msg) {
+	if (curr_pos == 0 || curr_pos == last_read_pos) {
+		return -1; 
+	}
 
-		puts(" ",DEFAULT);
+	// ncPrint("CURR POS: ");
+	// ncPrintDec(curr_pos);
 
-		index=index+6; /* source mac */
-		index=index+2; /* garbage bytes  */
+	// ncPrint("  LAST READPOS: ");
+	// ncPrintDec(last_read_pos);	
 
-		for(int i=0;i<180;i++){
-			putchar(data[index+i],GREEN);
-			if(data[i+index]=='\0'){
-				break;
-			}
-		}		
+	memcpy(src_mac, buffer[last_read_pos].src_mac, 6);
+	memcpy(dest_mac, buffer[last_read_pos].dest_mac, 6);
+	char * aux = buffer[last_read_pos].msg;
+
+	while (*aux != 0) {
+		*msg++ = *aux++;
+	}
+	*msg = 0;
+
+	last_read_pos++;
+
+	if (last_read_pos == BUFFER_SIZE) {
+		last_read_pos = 0;
+	}
+
+	return 0;
 }
 
 void network_handler(){	
@@ -264,8 +311,8 @@ void send_packet (char * dest_mac, char * data, uint16_t size){
 	memcpy(tx_buf0+9,&mac[3],1);
 	memcpy(tx_buf0+10,&mac[4],1);
 	memcpy(tx_buf0+11,&mac[5],1);
-	memcpy(tx_buf0+12,"\x00\x00",2);
-	memcpy(tx_buf0+14,data,size);	
+	memcpy(tx_buf0+13,&size,1);		// longitud del mensaje (maximo 256)
+	memcpy(tx_buf0+14,data,size);
 
 	len = 14 + size;
 

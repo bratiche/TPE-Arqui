@@ -16,6 +16,7 @@ char * strstr(const char * str1, const char * str2);
 int prefix(const char * str1, const char * str2);
 
 char * strcat(char *dest, const char *src);
+char * strcat_space(char *dest, const char *src);
 
 
 #endif
