@@ -124,6 +124,29 @@ void print_mac_address(uint8_t mac[6]) {
 	}
 }
 
+int accept (uint8_t * destination_mac){
+
+	int broadcast=1;
+	
+	for (int i = 0; i<6 ; i++){ // BROADCAST
+		if (destination_mac[i]!=255){			
+			broadcast=0;
+		}
+	}	
+
+	if (broadcast){
+		return 1;
+	}
+
+	for (int i = 0; i<6 ; i++){
+		if (destination_mac[i]!=mac[i]){
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
 // TODO test buffer
 #define BUFFER_SIZE 128
 
@@ -132,16 +155,29 @@ uint8_t curr_pos = 0;
 
 void handle_data(uint8_t * data){
 
-	memcpy(buffer[curr_pos].dest_mac, data, 6);  
-	memcpy(buffer[curr_pos].src_mac, data + 6, 6);
+	uint8_t destination[6];
 
-	buffer[curr_pos].msg = (char *)malloc(data[13] + 1);
-	memcpy(buffer[curr_pos].msg, data + 14, data[13] + 1);
+	destination[0]=data[0];
+	destination[1]=data[1];
+	destination[2]=data[2];
+	destination[3]=data[3];
+	destination[4]=data[4];
+	destination[5]=data[5];
 
-	curr_pos++;
+	if (accept(destination)){
 
-	if (curr_pos >= BUFFER_SIZE) {
-		curr_pos = 0;
+		memcpy(buffer[curr_pos].dest_mac, data, 6);  
+		memcpy(buffer[curr_pos].src_mac, data + 6, 6);
+
+		buffer[curr_pos].msg = (char *)malloc(data[13] + 1);
+		memcpy(buffer[curr_pos].msg, data + 14, data[13] + 1);
+
+		curr_pos++;
+
+		if (curr_pos >= BUFFER_SIZE) {
+			curr_pos = 0;
+		}
+
 	}
 
 	//print buffer

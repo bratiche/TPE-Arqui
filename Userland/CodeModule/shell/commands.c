@@ -410,12 +410,17 @@ char * parse_msg (int argc, char ** argv){
 	return msg;
 }
 
+/*TODO: implement this method */
+char * parse_mac (char * mac){
+	
+	return "\x52\x54\xab\xcd\xef\x13";
+}
+
 
 #define valid_mac_symbol(c) ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
 
 
-/* TODO: parse mac and msg */
-/* checkear la mac de destino en network.c (driver)*/
+/* TODO: parse mac */
 // TODO read packet syscall
 int chat(int argc, char ** argv){
 
@@ -449,8 +454,6 @@ int chat(int argc, char ** argv){
 		return -1;
 	}	
 
-	char * mac = "\xAA\xBB\xCC\xDD\xEE\xFF";	
-
 	char * arg = argv[0];
 	int position = 1;	
  
@@ -472,9 +475,10 @@ int chat(int argc, char ** argv){
 		position++;
 	}
 
-	msg = parse_msg(argc-1,argv+1);
+	msg = parse_msg(argc-1,argv+1);	
 
-	send(mac,msg,strlen(msg));
+	send(parse_mac(argv[0]),msg,strlen(msg));
 
 	return 0;
 }
+
