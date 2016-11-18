@@ -268,8 +268,8 @@ void network_handler(){
 		}
 
 		tx_buffers_free++;
-		puts("Message Sent.",DEFAULT);
-		puts("\n",DEFAULT);
+		//puts("Message Sent.",DEFAULT);
+		//puts("\n",DEFAULT);
 
 		write_port_word(ioaddr + ISR, FLAG_ISR_TOK);
 	}
@@ -336,7 +336,7 @@ void network_handler(){
 
 }
 
-void send_packet (char * dest_mac, char * data, uint16_t size){
+void send_packet(char * dest_mac, char * data, uint16_t size){
 
 	uint16_t len;	
 

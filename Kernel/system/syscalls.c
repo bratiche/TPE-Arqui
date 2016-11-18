@@ -230,8 +230,6 @@ uint64_t sys_send(uint64_t dest, uint64_t msg, uint64_t length){
 	return 0;
 }
 
-packet ret;
-
 uint64_t sys_get_packet(uint64_t src, uint64_t dest, uint64_t msg) {
 	uint8_t * src_mac = (uint8_t *)src;
 	uint8_t * dest_mac = (uint8_t *)dest;

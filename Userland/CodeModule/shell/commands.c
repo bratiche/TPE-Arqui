@@ -6,6 +6,7 @@
 #include <shell.h>
 #include <fractals.h>
 #include <tests.h>
+#include <ctype.h>
 
 static char * user = "USER";
 
@@ -97,9 +98,9 @@ int help(int argc, char ** argv) {
 				printf("\tWrites formatted output to the console.\n");
 				break;
 			case BROADCAST:
-				printf("\tSends a broadcast.\n");
+				printf("\tBroadcasts a message to all available users.\n");
 			case CHAT:
-				printf("\tSends a message to the specified user.\n");
+				printf("\tSends a message to the specified user. If no arguments are passed, it shows all the recieved messages, if any.\n");
 		}
 
 		return 0;
@@ -390,12 +391,14 @@ int broadcast(int argc, char ** argv){
 		return -1;
 	}
 
-	char * msg;	
+	char * msg = parse_msg(argc,argv);	
 
-	msg=parse_msg(argc,argv);	
+	if (send("\xff\xff\xff\xff\xff\xff", msg, strlen(msg)) == 0) {
+		printf("Message sent\n");
+		return 0;
+	}
 
-	send("\xff\xff\xff\xff\xff\xff", msg, strlen(msg));
-	return 0;
+	return -1;
 }
 
 //TODO AGREGAR F***ING ESPACIOS PLEASE
@@ -404,30 +407,91 @@ char * parse_msg (int argc, char ** argv){
 	char * msg = argv[0];	
 
 	for (int i = 1; i < argc ; i++){		
-		msg=strcat_space(msg,argv[i]);
+		msg = strcat_space(msg,argv[i]);
 	}
 	
 	return msg;
 }
 
-/*TODO: implement this method */
-char * parse_mac (char * mac){
-	
-	return "\x52\x54\xab\xcd\xef\x13";
+char hex[16] = {'\x0', '\x1', '\x2', '\x3', '\x4', '\x5', '\x6', '\x7',
+				'\x8', '\x9', '\xA', '\xB', '\xC', '\xD', '\xE', '\xF' };
+
+/* Returns the hex code of a hexadecimal character (already validated) */
+char get_hex(char c) {
+	char ret;
+
+	if (isdigit(c)) {	// from 0 to 9
+		ret = hex[c - '0'];
+	} else { 			// from A to F
+		ret = hex[10 + toupper(c) - 'A'];
+	}
+
+	return ret;
 }
 
+char * parse_mac(char * mac) {
 
-#define valid_mac_symbol(c) ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
+	// for (int i = 0; i < 16; i++) {
+	// 	printf("hex[%d]: %c\n", i, hex[i]);
+	// }
 
+	// printf("CARACTER: %c\n", '\x12');
+	// printf("STRING: %s\n", "\x12");
 
-/* TODO: parse mac */
-// TODO read packet syscall
+	// printf("1 en HEXA: %c\n", hex[1]);
+	// printf("2 en HEXA: %c\n", hex[2]);
+
+	// printf("CARACTER ARMADO: %c\n", ((hex[1] << 4) + hex[2]));
+
+	char * ret = "123456";	// mac address is formed of 6 characters
+	int ret_index = 0;	
+	int mac_index = 1;
+
+	char c1, c2;
+
+	while(*mac != '\0') {
+		if(mac_index % 3 == 0) {
+			if (*mac != ':') {
+				return NULL;
+			}
+			mac++;
+			mac_index++;
+		}
+
+		else {
+			if (!isxdigit(*mac) || *(mac + 1) == '\0' || !isxdigit(*(mac + 1))) {
+				return NULL;
+			}
+
+			c1 = get_hex(*mac);
+			c2 = get_hex(*(mac + 1));
+
+			ret[ret_index++] = ((c1 << 4) + c2);
+
+			mac += 2;
+			mac_index += 2;
+		}
+
+	}
+
+	if (ret_index != 6) {
+		return NULL;
+	}
+ 
+ 	//TEST
+	// printf("Harcoded mac address: %s\n", "\x52\x54\xab\xcd\xef\x13");
+	// printf("Parsed mac address : %s\n", ret);
+	
+	return ret;
+}
+
 int chat(int argc, char ** argv){
 
 	uint8_t src[6];
 	uint8_t dest[6];
 	char * msg = NULL;
 
+	/* If no arguments are passed, all the recieved messages are shown */
 	if (argc == 0) {
 		while(get_packet(src, dest, msg) != -1) {
 		
@@ -454,31 +518,19 @@ int chat(int argc, char ** argv){
 		return -1;
 	}	
 
-	char * arg = argv[0];
-	int position = 1;	
- 
-	while(*arg != '\0') {
-		if(position != 0 && position % 3 == 0) {
-			if (*arg != ':') {
-				fprintf(STDERR, "Invalid mac address 1!\n");				
-				return -1;
-			}
-		}
+	char * dest_mac = NULL;
 
-		else {
-			if (!valid_mac_symbol(*arg)) {
-				fprintf(STDERR, "Invalid mac address 2!\n");
-				return -1;
-			}
-		}
-		arg++;
-		position++;
+	if ((dest_mac = parse_mac(argv[0])) == NULL) {
+		fprintf(STDERR, "Invalid mac address format!\n");
+		return -1;
 	}
 
-	msg = parse_msg(argc-1,argv+1);	
+	/* First argument is the dest mac address, second argument is the message */
+	if (send(dest_mac, argv[1], strlen(argv[1])) == 0) {
+		printf("Message sent\n");
+		return 0;
+	}
 
-	send(parse_mac(argv[0]),msg,strlen(msg));
-
-	return 0;
+	return -1;
 }
 
