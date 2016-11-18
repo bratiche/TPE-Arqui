@@ -404,9 +404,9 @@ int broadcast(int argc, char ** argv){
 //TODO AGREGAR F***ING ESPACIOS PLEASE
 char * parse_msg (int argc, char ** argv){	
 
-	char * msg = argv[0];	
+	char * msg = malloc(80);  //Max length of msg	
 
-	for (int i = 1; i < argc ; i++){		
+	for (int i = 0; i < argc ; i++){		
 		msg = strcat_space(msg,argv[i]);
 	}
 	
@@ -525,8 +525,10 @@ int chat(int argc, char ** argv){
 		return -1;
 	}
 
+	msg = parse_msg(argc-1,argv+1);	
+
 	/* First argument is the dest mac address, second argument is the message */
-	if (send(dest_mac, argv[1], strlen(argv[1])) == 0) {
+	if (send(dest_mac, msg, strlen(msg)) == 0) {
 		printf("Message sent\n");
 		return 0;
 	}
