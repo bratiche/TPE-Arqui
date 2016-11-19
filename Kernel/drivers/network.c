@@ -19,14 +19,17 @@
 #define TSAD1 0x24
 #define TSAD2 0x28
 #define TSAD3 0x2C
+#define RBSTART 0x30
+#define CR 0x37
 #define CAPR 0x38 /* Current adress of packet read*/
-
+#define CONFIG1 0x52
+#define IMR 0x3C
+#define ISR 0x3E
+#define RCR 0x44
 
 #define ROK 1
 #define RX_READ_POINTER_MASK (~3)
 
-
-#define ISR 0x3E
 
 #define FLAG_ISR_SERR	0x8000	// System error
 #define FLAG_ISR_TIMEO	0x4000	// Timer timeout (See TIMERINT)
@@ -44,7 +47,6 @@ uint8_t mac[6];
 uint8_t *rx_buf;
 uint16_t rx_pos;
 
-uint8_t * tx_buf[4];
 uint8_t * tx_buf0 = (unsigned char *)0x700000;
 uint8_t tx_pos;
 uint8_t tx_buffers_free;
@@ -53,29 +55,29 @@ uint8_t tx_buffers_free;
 
 void turn_on(){
 
-	write_port(ioaddr + 0x52, 0x0);
+	write_port(ioaddr + CONFIG1, 0x0);
 }
 
 void clear_buffer(){
-	write_port( ioaddr + 0x37, 0x10);
- 	while( (read_port(ioaddr + 0x37) & 0x10) != 0) { } 	
+	write_port( ioaddr + CR, 0x10);
+ 	while( (read_port(ioaddr + CR) & 0x10) != 0) { } 	
 }
 
 void init_receive_buffer(){	
 	rx_buf = (unsigned char *) RECEIVE_BUFFER;
-	write_port_dword(ioaddr + 0x30, (uint64_t) rx_buf); // send uint32_t memory location to RBSTART (0x30)}
+	write_port_dword(ioaddr + RBSTART, (uint64_t) rx_buf); // send uint32_t memory location to RBSTART (0x30)}
 }
 
 void set_imr_isr(){
-	write_port_word(ioaddr + 0x3C, 0x0005); // Sets the TOK and ROK bits high
+	write_port_word(ioaddr + IMR, 0x0005); // Sets the TOK and ROK bits high
 }
 
 void configure_receive_buffer(){
-	write_port_dword(ioaddr + 0x44, 0xf | (1 << 7)); // (1 << 7) is the WRAP bit, 0xf is AB+AM+APM+AAP
+	write_port_dword(ioaddr + RCR, 0xf | (1 << 7)); // (1 << 7) is the WRAP bit, 0xf is AB+AM+APM+AAP
 }
 
 void enable_receiver_transmiter(){
-	write_port(ioaddr + 0x37, 0x0C);
+	write_port(ioaddr + CR, 0x0C);
 }
 
 // return the array containing the 6 bytes of a mac address
@@ -229,29 +231,7 @@ void network_handler(){
 	//ncPrint("Network Interruption");
 
 	/* Interrupt acknowledge */
-	uint16_t status;//=read_port_word(ioaddr + 0x3E);
-	//write_port_word(ioaddr + 0x3E, status);
-
-	/*if(status & ROK)
-	{
-		while((read_port(ioaddr+0x37) & 0x1) == 0)
-		{
-			uint16_t rx_len=*(uint16_t*)(rx_buf + rx_pos + 2);
-			//kprintf("packet length: %d\n", rx_len);
-
-			// Handle the packet and send reply if needed
-			uint8_t *data=rx_buf + rx_pos + 4;	
-
-			puts(data,DEFAULT);
-
-			// Update CAPR. This is some higher level magic found from the manual
-			// +4 is the header, +3 is dword alignment
-			rx_pos=(rx_pos + rx_len + 4 + 3) & RX_READ_POINTER_MASK;
-			write_port_word(ioaddr + 0x38, rx_pos - 0x10);
-			rx_pos%=0x2000;
-		}
-	}
-*/	
+	uint16_t status;
 	int j=0;	
 	status = read_port_word(ioaddr + ISR);
 	if( !status )	return ;	

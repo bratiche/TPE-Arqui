@@ -18,7 +18,7 @@ typedef enum {
 	TESTS,	
 	PRINTF,			// version limitada de la funcion printf
 	BROADCAST,
-	CHAT,
+	CHAT
 } command_id;
 
 typedef int (*command_fn)(int, char **);

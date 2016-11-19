@@ -99,6 +99,7 @@ int help(int argc, char ** argv) {
 				break;
 			case BROADCAST:
 				printf("\tBroadcasts a message to all available users.\n");
+				break;
 			case CHAT:
 				printf("\tSends a message to the specified user. If no arguments are passed, it shows all the recieved messages, if any.\n");
 		}
@@ -383,7 +384,6 @@ int _printf(int argc, char ** argv) {
 char * parse_msg (int argc, char ** argv);
 
 
-/*TODO: espacios */
 int broadcast(int argc, char ** argv){
 
 	if (argc == 0){
@@ -401,7 +401,6 @@ int broadcast(int argc, char ** argv){
 	return -1;
 }
 
-//TODO AGREGAR F***ING ESPACIOS PLEASE
 char * parse_msg (int argc, char ** argv){	
 
 	char * msg = malloc(80);  //Max length of msg	
