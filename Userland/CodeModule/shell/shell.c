@@ -5,8 +5,6 @@
 #include <commands.h>
 #include <ctype.h>
 
-#define BUFFER_SIZE 256
-
 #define ignore_spaces(str) { while (isspace(*str)) str++; }
 #define ignore_characters(str) { while (*str != 0 && !isspace(*str)) str++;}
 

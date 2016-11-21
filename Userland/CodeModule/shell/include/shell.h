@@ -4,7 +4,7 @@
 #include <commands.h>
 
 #define MAX_USERNAME_SIZE 20
-
+#define BUFFER_SIZE 256
 
 void init_shell(void);	
 void update_shell(void);

@@ -12,6 +12,8 @@ static char * user = "USER";
 
 static char username[MAX_USERNAME_SIZE];
 
+#define MAC_SIZE 17
+
 int echo(int argc, char ** argv) {
 	int i;
 	char * arg;
@@ -403,7 +405,7 @@ int broadcast(int argc, char ** argv){
 
 char * parse_msg (int argc, char ** argv){	
 
-	char * msg = malloc(80);  //Max length of msg	
+	char * msg = malloc(BUFFER_SIZE-MAC_SIZE);  //Max length of msg	
 
 	for (int i = 0; i < argc ; i++){		
 		msg = strcat_space(msg,argv[i]);
@@ -494,7 +496,7 @@ int chat(int argc, char ** argv){
 	if (argc == 0) {
 		while(get_packet(src, dest, msg) != -1) {
 		
-			printf("Mensaje de ");
+			printf("Message from ");
 			for(int i = 0; i < 6; i++) {
 				printf("%x", src[i]);
 				if (i == 5){
