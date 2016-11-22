@@ -52,6 +52,8 @@ uint8_t tx_pos;
 uint8_t tx_buffers_free;
 
 /* Source: http://wiki.osdev.org/RTL8139 */
+/* References: https://github.com/Detegr/tapiOS/blob/master/drivers/rtl8139.c */
+/* References: https://github.com/thepowersgang/acess2/blob/master/KernelLand/Modules/Network/RTL8139/rtl8139.c */
 
 void turn_on(){
 
@@ -172,7 +174,7 @@ void handle_data(uint8_t * data){
 		memcpy(buffer[curr_pos].src_mac, data + 6, 6);
 
 		buffer[curr_pos].msg = (char *)malloc(data[13] + 1);
-		memcpy(buffer[curr_pos].msg, data + 14, data[13] + 1);
+		memcpy(buffer[curr_pos].msg, data + 14, data[13]);		
 
 		curr_pos++;
 
